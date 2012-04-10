@@ -1,3 +1,5 @@
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.*;
 import java.util.*;
@@ -7,6 +9,8 @@ public class ChatUser extends StreamHandler{
 	public String userName=null;
 	public boolean isKick=false;
 	public boolean isLogin=false;
+	public StreamHandler input_log=null;
+	public StreamHandler output_log=null;
 	public ChatUser(ChatRoom room,Socket socket) throws IOException{
 		super(socket.getInputStream(),socket.getOutputStream());
 		this.room=room;
@@ -34,6 +38,7 @@ public class ChatUser extends StreamHandler{
 			public void action(StreamHandler sender, String line) {
 				ChatUser user=(ChatUser)sender;
 				line=line.replace(" ", "");
+				line=line.replace("/", "");
 					if(line.isEmpty()){
 						user.writeLine("/msg Error: No username is input.");
 						user.writeLine("/msg Username:");
@@ -50,6 +55,13 @@ public class ChatUser extends StreamHandler{
 						user.userName=line;
 						room.castWriteLine(String.format("/msg %s is connecting to the chat server.",user.userName));
 						user.isLogin=true;
+						try {
+							output_log=new StreamHandler(new FileOutputStream(String.format("./output_%s.txt",user.userName),true));
+						} catch (Exception e) {	}
+						try {
+							input_log=new StreamHandler(new FileOutputStream(String.format("./input_%s.txt",user.userName),true));
+						} catch (Exception e) {	}
+						
 						room.users.put(line, user);
 						user.writeLine("/msg *******************************************");
 						user.writeLine(String.format("/msg ** <%s>, welcome to the chat system.", user.userName));
@@ -238,6 +250,8 @@ public class ChatUser extends StreamHandler{
 					user.flush();
 					return;
 				}
+				String cast=String.format("/kick %s", u.userName);
+				room.castWriteLine(cast);
 				u.clearReadLineHander();
 				u.isKick=true;
 				room.users.remove(u.userName);
@@ -279,4 +293,22 @@ public class ChatUser extends StreamHandler{
 		room.sys.writeLine(msg);
 		room.sys.flush();
 	}
+	 @Override
+	public void write(String arg0) {
+		super.write(arg0);
+		if(isLogin){
+		output_log.write(arg0);
+		output_log.flush();
+		}
+	}
+	 @Override
+	 public String readLine() {
+		 String str= super.readLine();
+		 if(isLogin){
+			input_log.writeLine(str);
+			input_log.flush();
+		 }
+		return str;
+	 }
+		
 }

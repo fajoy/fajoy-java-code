@@ -11,9 +11,12 @@ public class ChatClient {
 			port=Integer.parseInt(args[1]);
 		}
 		connect(host, port);
+		if(server==null)
+			return;
 		while(!server.isLeave){
 			server.beginLogin();
 		}
+		
 	}
 	public static  boolean connect(String host,int port){
 		try {
