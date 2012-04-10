@@ -1,16 +1,20 @@
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
-public class StreamHandler {
-	private BufferedReader reader=null;
-	private BufferedWriter writer=null;
+
+public class StreamHandler implements Runnable{
+	protected BufferedReader reader=null;
+	protected BufferedWriter writer=null;
 	private Thread readThread = null;
 	private List<ReadLineHandler<StreamHandler>> eventReadLine = new ArrayList<ReadLineHandler<StreamHandler>>();
-	private boolean _isReading = false;
-
+	protected boolean _isReading = false;
+	public int readLength=0;
+	protected StreamHandler () {}
+	public StreamHandler(Socket sock) throws IOException {
+		setReader(sock.getInputStream());
+		setWriter(sock.getOutputStream());
+	}
 	public StreamHandler(InputStream is,OutputStream os) throws IOException {
 		setReader(is);
 		setWriter(os);
@@ -30,7 +34,7 @@ public class StreamHandler {
 	public void beginAsyncReadline() {
 		if (readThread == null) {
 			_isReading = true;
-			readThread = new Thread(readRunnable);
+			readThread = new Thread(this);
 			readThread.start();
 		}
 	}
@@ -39,10 +43,12 @@ public class StreamHandler {
 		try {
 			writer.write(arg0);
 		} catch (IOException e) {
-			throwsHandler(e);
+			writeError(e);
 		}
 	}
-
+	public void writeLine(String arg0) {
+			write(String.format("%s\n",arg0));
+	}
 	public void endAsyncReadline() {
 		_isReading = false;
 	}
@@ -50,16 +56,17 @@ public class StreamHandler {
 	protected void setReadLineHander(ReadLineHandler<StreamHandler> handler) {
 		eventReadLine.add(handler);
 	}
-
+	protected void clearReadLineHander() {
+		eventReadLine.clear();
+	}
 	private void readLineHandle() {
 		String line;
 		while (_isReading) {
 			line = this.readLine();
 			if(line==null)
 				break;
-			for (Iterator<ReadLineHandler<StreamHandler>> iterator = eventReadLine
-					.iterator(); iterator.hasNext();) {
-				ReadLineHandler<StreamHandler> ent = iterator.next();
+			for (Object obj: eventReadLine.toArray()) {
+				ReadLineHandler<StreamHandler> ent=(ReadLineHandler<StreamHandler>)obj;
 				ent.action(this, line);
 			}
 		}
@@ -70,25 +77,38 @@ public class StreamHandler {
 		String line = null;
 		try {
 			line = reader.readLine();
+			readLength+=line.length()+1;
 		} catch (IOException e) {
+			_isReading = false;
 			throwsHandler(e);
+		} catch (java.lang.NullPointerException e) {
+			_isReading = false;
 		}
 		return line;
 	}
 
-	protected void throwsHandler(IOException e) {
-		_isReading = false;
-		System.out.println("Socket Close");
+	private void throwsHandler(IOException e) {
+		readLineError(e);
 		// throw e;
 		// e.printStackTrace();
 	}
-
-	private Runnable readRunnable = new Runnable() {
-		@Override
-		public void run() {
+	protected void readLineError(IOException e) {
+		System.out.println("ReadLine Error");
+		// throw e;
+		// e.printStackTrace();
+	}
+	protected void writeError(IOException e) {
+		System.out.println("Write Error");
+		// throw e;
+		// e.printStackTrace();
+	}
+	
+	
+	public void run() {
 			readLineHandle();
-		}
-	};
+			readThread=null;
+	}
+	
 	public void close(){
 		try {
 			if(writer!=null)
