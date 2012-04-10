@@ -33,7 +33,7 @@ public class ChatRoom extends ServerCore{
 				con_log.writeLine(String.format("%s/%d\t%d",socket.getInetAddress().getHostAddress(),socket.getPort(),++this.flowLogID));
 				con_log.flush();
 				ChatUser user=new ChatUser(this,socket);
-				addClient(user, socket);
+				addClient(user);
 				user.beginLogin();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -58,7 +58,7 @@ public class ChatRoom extends ServerCore{
 	}
 	public synchronized  void castWriteLine(String arg0){
 		ChatUser[] set=new ChatUser[this.clients.size()];
-		this.clients.keySet().toArray(set);
+		this.clients.toArray(set);
 		this.castWriteLine(set,arg0);
 	}
 

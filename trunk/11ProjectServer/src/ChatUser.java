@@ -112,7 +112,7 @@ public class ChatUser extends StreamHandler{
 				}
 				
 				String msg=line.substring(msgi+1);
-				u.writeLine(String.format("/msg %s told %s:%s",user.userName,u.userName, msg));
+				u.writeLine(String.format("/msg %s told %s: %s",user.userName,u.userName, msg));
 				u.flush();
 				//showMsg(line.substring(cmd.length()));
 			}
@@ -130,7 +130,7 @@ public class ChatUser extends StreamHandler{
 				if(!line.substring(0,msgi).equals(cmd))
 					return;
 				user.writeLine("/msg Name\tIP/port");
-				for(Object obj : room.clients.keySet().toArray()){
+				for(Object obj : room.clients.toArray()){
 					ChatUser u=(ChatUser)obj;
 					if(u.isKick)
 						continue;
