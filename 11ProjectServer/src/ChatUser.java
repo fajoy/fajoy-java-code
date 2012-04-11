@@ -17,7 +17,7 @@ public class ChatUser extends StreamHandler{
 		this.sock=socket;
 	}
 	public void beginLogin(){		
-		setReadLineHander(entInputUserName);
+		setReadLineHander(entReqUserName);
 		beginAsyncReadline();
 	}
 	
@@ -33,7 +33,7 @@ public class ChatUser extends StreamHandler{
 		//}
 		this.flush();
 	}
-	 private ReadLineHandler<StreamHandler> entInputUserName=new ReadLineHandler<StreamHandler>() {		
+	 private ReadLineHandler<StreamHandler> entReqUserName=new ReadLineHandler<StreamHandler>() {		
 			@Override
 			public void action(StreamHandler sender, String line) {
 				ChatUser user=(ChatUser)sender;
@@ -69,18 +69,18 @@ public class ChatUser extends StreamHandler{
 						user.flush();
 						dumpPost();
 						user.clearReadLineHander();
-						user.setReadLineHander(entInputYell);
-						user.setReadLineHander(entInputTell);
-						user.setReadLineHander(entInputWho);
-						user.setReadLineHander(entInputPost);
-						user.setReadLineHander(entInputRemove);
-						user.setReadLineHander(entInputKick);
-						user.setReadLineHander(entInputLeave);
+						user.setReadLineHander(entReqYell);
+						user.setReadLineHander(entReqTell);
+						user.setReadLineHander(entReqWho);
+						user.setReadLineHander(entReqPost);
+						user.setReadLineHander(entReqRemove);
+						user.setReadLineHander(entReqKick);
+						user.setReadLineHander(entReqLeave);
 					}
 			}
 	 };
 	 
-	 private ReadLineHandler<StreamHandler> entInputYell=new ReadLineHandler<StreamHandler>() {		
+	 private ReadLineHandler<StreamHandler> entReqYell=new ReadLineHandler<StreamHandler>() {		
 			@Override
 			public void action(StreamHandler sender, String line) {
 				ChatUser user=(ChatUser)sender;
@@ -96,7 +96,7 @@ public class ChatUser extends StreamHandler{
 			}
 	 };
 	
-	 private ReadLineHandler<StreamHandler> entInputTell=new ReadLineHandler<StreamHandler>() {		
+	 private ReadLineHandler<StreamHandler> entReqTell=new ReadLineHandler<StreamHandler>() {		
 			@Override
 			public void action(StreamHandler sender, String line) {
 				ChatUser user=(ChatUser)sender;
@@ -129,7 +129,7 @@ public class ChatUser extends StreamHandler{
 				//showMsg(line.substring(cmd.length()));
 			}
 	 };
-	 private ReadLineHandler<StreamHandler> entInputWho=new ReadLineHandler<StreamHandler>() {		
+	 private ReadLineHandler<StreamHandler> entReqWho=new ReadLineHandler<StreamHandler>() {		
 			@Override
 			public void action(StreamHandler sender, String line) {
 				ChatUser user=(ChatUser)sender;
@@ -160,7 +160,7 @@ public class ChatUser extends StreamHandler{
 			}
 	 };
 	
-	 private ReadLineHandler<StreamHandler> entInputRemove=new ReadLineHandler<StreamHandler>() {		
+	 private ReadLineHandler<StreamHandler> entReqRemove=new ReadLineHandler<StreamHandler>() {		
 			@Override
 			public void action(StreamHandler sender, String line) {
 				ChatUser user=(ChatUser)sender;
@@ -208,7 +208,7 @@ public class ChatUser extends StreamHandler{
 			}
 	 };
 	 
-	 private ReadLineHandler<StreamHandler> entInputPost=new ReadLineHandler<StreamHandler>() {		
+	 private ReadLineHandler<StreamHandler> entReqPost=new ReadLineHandler<StreamHandler>() {		
 			@Override
 			public void action(StreamHandler sender, String line) {
 				ChatUser user=(ChatUser)sender;
@@ -227,7 +227,7 @@ public class ChatUser extends StreamHandler{
 				//showMsg(line.substring(cmd.length()));
 			}
 	 };
-	 private ReadLineHandler<StreamHandler> entInputKick=new ReadLineHandler<StreamHandler>() {		
+	 private ReadLineHandler<StreamHandler> entReqKick=new ReadLineHandler<StreamHandler>() {		
 			@Override
 			public void action(StreamHandler sender, String line) {
 				ChatUser user=(ChatUser)sender;
@@ -255,12 +255,12 @@ public class ChatUser extends StreamHandler{
 				u.clearReadLineHander();
 				u.isKick=true;
 				room.users.remove(u.userName);
-				u.setReadLineHander(entInputLeave);
+				u.setReadLineHander(entReqLeave);
 				//showMsg(line.substring(cmd.length()));
 			}
 	 };
 	 
-	 private ReadLineHandler<StreamHandler> entInputLeave=new ReadLineHandler<StreamHandler>() {		
+	 private ReadLineHandler<StreamHandler> entReqLeave=new ReadLineHandler<StreamHandler>() {		
 			@Override
 			public void action(StreamHandler sender, String line) {
 				ChatUser user=(ChatUser)sender;
@@ -281,11 +281,11 @@ public class ChatUser extends StreamHandler{
 	 }
 	
 	 @Override
-	 protected void writeError(IOException e) {
+	 protected void writeError(Exception e) {
 		 
 	 }
 	 @Override
-	protected void readLineError(IOException e) {
+	protected void readLineError(Exception e) {
 		//super.readLineError(e);
 		room.clients.remove(this);
 		room.users.remove(this.userName);
