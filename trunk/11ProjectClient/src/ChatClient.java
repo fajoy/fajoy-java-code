@@ -16,7 +16,7 @@ public class ChatClient {
 		while(!server.isLeave){
 			server.beginLogin();
 		}
-		
+	 	System.out.println("Connect Over.");
 	}
 	public static  boolean connect(String host,int port){
 		try {

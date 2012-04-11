@@ -29,7 +29,7 @@ public class ChatRoomClient extends StreamHandler {
 		sys.flush();
 		//this.setReadLineHander(entDebug);
 		this.setReadLineHander(entGetUserName);
-		this.setReadLineHander(entShowMsg);
+		this.setReadLineHander(entRespMsg);
 		this.beginAsyncReadline();
 		while(_isReading){
         String line=sys.readLine();
@@ -47,7 +47,6 @@ public class ChatRoomClient extends StreamHandler {
 				if(ChatClient.connect(strHost, port)){
 					this.writeLine("/leave");
 					this.flush();
-					this.sock.close();
 					break;
 				}
 				}catch(Exception e){
@@ -58,21 +57,24 @@ public class ChatRoomClient extends StreamHandler {
  		 }
 		}
 		 
-			 
-		 if(line.equals("/showpost")){
+		if(line.equals("/showpost")){
 			 showPost();
 		 	continue;
 		 }
         }
 		 this.writeLine(line);
 		 this.flush();
+		 
+		 if(line.equals("/leave")){
+			 isLeave=true;
+		 }
 		 if(isLeave){
-			 sys.writeLine("Connect Over.");
-			 sys.flush();
 			 break;
 		 }
 		}
-		isLeave=true;
+		
+		
+		
 	}
 	public void showPost(){
 			for(Object obj2:posts.values().toArray()){
@@ -130,14 +132,15 @@ public class ChatRoomClient extends StreamHandler {
 					input_log=new StreamHandler(new FileOutputStream(String.format("./input_%s.txt",user.userName),true));
 				} catch (Exception e) {	}
 				user.clearReadLineHander();
-				user.setReadLineHander(entShowMsg);
-				user.setReadLineHander(entRequestPost);
-				user.setReadLineHander(entRequestRemove);			
+				user.setReadLineHander(entRespMsg);
+				user.setReadLineHander(entRespPost);
+				user.setReadLineHander(entRespRemove);
+				user.setReadLineHander(entRespKick);
 				//String msg=line.substring(cmd.length());
 				
 			}
 	 };
-	 private ReadLineHandler<StreamHandler> entShowMsg=new ReadLineHandler<StreamHandler>() {		
+	 private ReadLineHandler<StreamHandler> entRespMsg=new ReadLineHandler<StreamHandler>() {		
 			@Override
 			public void action(StreamHandler sender, String line) {
 				//ChatRoomClient user=(ChatRoomClient)sender;
@@ -155,7 +158,7 @@ public class ChatRoomClient extends StreamHandler {
 			}
 	 };
 	 
-	 private ReadLineHandler<StreamHandler> entRequestPost=new ReadLineHandler<StreamHandler>() {		
+	 private ReadLineHandler<StreamHandler> entRespPost=new ReadLineHandler<StreamHandler>() {		
 			@Override
 			public void action(StreamHandler sender, String line) {
 				//ChatRoomClient user=(ChatRoomClient)sender;
@@ -178,7 +181,7 @@ public class ChatRoomClient extends StreamHandler {
 			}
 	 };
 	 
-	 private ReadLineHandler<StreamHandler> entRequestRemove=new ReadLineHandler<StreamHandler>() {		
+	 private ReadLineHandler<StreamHandler> entRespRemove=new ReadLineHandler<StreamHandler>() {		
 			@Override
 			public void action(StreamHandler sender, String line) {
 				//ChatRoomClient user=(ChatRoomClient)sender;
@@ -200,18 +203,26 @@ public class ChatRoomClient extends StreamHandler {
 				sys.flush();
 			}
 	 };
+	 private ReadLineHandler<StreamHandler> entRespKick=new ReadLineHandler<StreamHandler>() {		
+			@Override
+			public void action(StreamHandler sender, String line) {
+				if(line.equals(String.format("/kick %s", userName)));{
+					isLeave=true;
+					sender.writeLine("/leave");
+					sender.flush();
+				}
+			}
+	 };
 	 private void showMsg(String msg){
 		 sys.writeLine(msg);
 		 sys.flush();
 	 }
 	 @Override
-	 protected void readLineError(IOException e) {
-			//super.readLineError(e);
+	 protected void readLineError(Exception e) {
 			isLeave=true;
 	}
 	@Override
-	protected void writeError(IOException e) {
-				//super.readLineError(e);
+	protected void writeError(Exception e) {
 			isLeave=true;
 	}	
 	 @Override

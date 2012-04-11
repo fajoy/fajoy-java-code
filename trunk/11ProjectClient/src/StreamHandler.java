@@ -3,7 +3,7 @@ import java.net.Socket;
 import java.util.*;
 
 
-public class StreamHandler implements Runnable{
+public class StreamHandler{
 	protected BufferedReader reader=null;
 	protected BufferedWriter writer=null;
 	private Thread readThread = null;
@@ -11,6 +11,13 @@ public class StreamHandler implements Runnable{
 	protected boolean _isReading = false;
 	public int readLength=0;
 	protected StreamHandler () {}
+	class ReadThread extends Thread{
+	@Override
+	public void run() {
+		StreamHandler.this.readLineHandle();
+		StreamHandler.this.readThread=null;
+	}
+	}
 	public StreamHandler(Socket sock) throws IOException {
 		setReader(sock.getInputStream());
 		setWriter(sock.getOutputStream());
@@ -34,7 +41,7 @@ public class StreamHandler implements Runnable{
 	public void beginAsyncReadline() {
 		if (readThread == null) {
 			_isReading = true;
-			readThread = new Thread(this);
+			readThread = new ReadThread();
 			readThread.start();
 		}
 	}
@@ -78,47 +85,31 @@ public class StreamHandler implements Runnable{
 		try {
 			line = reader.readLine();
 			readLength+=line.length()+1;
-		} catch (IOException e) {
+		} catch (Exception e) {
 			_isReading = false;
-			throwsHandler(e);
-		} catch (java.lang.NullPointerException e) {
-			_isReading = false;
+			readLineError(e);
 		}
 		return line;
 	}
 
-	private void throwsHandler(IOException e) {
-		readLineError(e);
-		// throw e;
-		// e.printStackTrace();
-	}
-	protected void readLineError(IOException e) {
+
+	protected void readLineError(Exception e) {
 		System.out.println("ReadLine Error");
-		// throw e;
-		// e.printStackTrace();
 	}
-	protected void writeError(IOException e) {
+	protected void writeError(Exception e) {
 		System.out.println("Write Error");
-		// throw e;
-		// e.printStackTrace();
-	}
-	
-	
-	public void run() {
-			readLineHandle();
-			readThread=null;
 	}
 	
 	public void close(){
 		try {
 			if(writer!=null)
-			writer.close();
+				writer.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		try {
 			if(reader!=null)
-			reader.close();
+				reader.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -126,11 +117,10 @@ public class StreamHandler implements Runnable{
 	public void flush(){
 		try {
 			if(writer!=null)
-			writer.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
+				writer.flush();
+		} catch (Exception e) {
+			writeError(e);
 		}
-
 	}
 
 }
