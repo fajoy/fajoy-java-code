@@ -149,10 +149,7 @@ public class ChatRoomClient extends StreamHandler {
 				if(cmd.length()>line.length())
 					return;
 				if(!line.substring(0,cmd.length()).equals(cmd))
-					return;
-				int i1=line.indexOf("/msg ** <");
-				int i2=line.indexOf("/msg ** <>");
-				
+					return;				
 				String msg=line.substring(cmd.length());
 				showMsg(msg);
 			}
@@ -206,10 +203,11 @@ public class ChatRoomClient extends StreamHandler {
 	 private ReadLineHandler<StreamHandler> entRespKick=new ReadLineHandler<StreamHandler>() {		
 			@Override
 			public void action(StreamHandler sender, String line) {
-				if(line.equals(String.format("/kick %s", userName)));{
+				if(line.equals(String.format("/kick %s", userName))){
 					isLeave=true;
 					sender.writeLine("/leave");
 					sender.flush();
+					System.exit(0);
 				}
 			}
 	 };
