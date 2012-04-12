@@ -66,6 +66,7 @@ public class StreamHandler{
 	protected void clearReadLineHander() {
 		eventReadLine.clear();
 	}
+	@SuppressWarnings("unchecked")
 	private void readLineHandle() {
 		String line;
 		while (_isReading) {

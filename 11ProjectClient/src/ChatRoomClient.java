@@ -2,20 +2,16 @@ import java.io.*;
 import java.net.Socket;
 import java.util.*;
 
-
 public class ChatRoomClient extends StreamHandler {
-	//public Map<String, UserModel>users=new HashMap<String, UserModel>();
 	public Map<Integer,ChatPost> posts=new HashMap<Integer, ChatPost>();
 	public StreamHandler sys=null;
 	public boolean isLeave=false;
 	public boolean isLogin=false;
 	public String userName=null;
-	private Socket sock=null;
 	public StreamHandler input_log=null;
 	public StreamHandler output_log=null;
 	public ChatRoomClient (Socket sock) throws IOException {
 		super(sock);
-		this.sock=sock;
 		this.sys=new StreamHandler(System.in, System.out);
 	}
 	public static ChatRoomClient connect(String serverHost, int port) throws IOException {
@@ -73,8 +69,6 @@ public class ChatRoomClient extends StreamHandler {
 		 }
 		}
 		
-		
-		
 	}
 	public void showPost(){
 			for(Object obj2:posts.values().toArray()){
@@ -84,31 +78,17 @@ public class ChatRoomClient extends StreamHandler {
 		sys.flush();
 		
 	}
-	/*
-	public ChatPost getUserPost(String userName,int msgid){
-		UserModel user= this.users.get(userName);
-		if(user==null)
-			return null;
-		return user.posts.get(msgid);
-	}
-	*/
+
 	public void setUserPost(String userName,int msgid,String value){
 		ChatPost post=new ChatPost(userName, msgid, value);
-		/*
-		UserModel user=users.get(userName);
-		if(user==null){
-			user=new UserModel(userName);
-			users.put(userName, user);
-		}*/
 		posts.put(msgid, post);
 		sys.writeLine(String.format("%s posted message '%d' in String: %s",post.userName,post.msgid,post.value));
 		sys.flush();
 	}
-	 private ReadLineHandler<StreamHandler> entDebug=new ReadLineHandler<StreamHandler>() {		
+	 @SuppressWarnings("unused")
+	private ReadLineHandler<StreamHandler> entDebug=new ReadLineHandler<StreamHandler>() {		
 			@Override
 			public void action(StreamHandler sender, String line) {
-				//ChatRoomClient user=(ChatRoomClient)sender;
-				//System.out.println(line);
 				showMsg(line);
 			}
 	 };
@@ -116,7 +96,6 @@ public class ChatRoomClient extends StreamHandler {
 			@Override
 			public void action(StreamHandler sender, String line) {
 				ChatRoomClient user=(ChatRoomClient)sender;
-				//System.out.println(line);
 				String s1="/msg ** <";
 				String s2=">, welcome to the chat system.";
 				int i1=line.indexOf(s1);
@@ -136,15 +115,12 @@ public class ChatRoomClient extends StreamHandler {
 				user.setReadLineHander(entRespPost);
 				user.setReadLineHander(entRespRemove);
 				user.setReadLineHander(entRespKick);
-				//String msg=line.substring(cmd.length());
 				
 			}
 	 };
 	 private ReadLineHandler<StreamHandler> entRespMsg=new ReadLineHandler<StreamHandler>() {		
 			@Override
 			public void action(StreamHandler sender, String line) {
-				//ChatRoomClient user=(ChatRoomClient)sender;
-				//System.out.println(line);
 				String cmd="/msg ";
 				if(cmd.length()>line.length())
 					return;
@@ -158,8 +134,6 @@ public class ChatRoomClient extends StreamHandler {
 	 private ReadLineHandler<StreamHandler> entRespPost=new ReadLineHandler<StreamHandler>() {		
 			@Override
 			public void action(StreamHandler sender, String line) {
-				//ChatRoomClient user=(ChatRoomClient)sender;
-				//System.out.println(line);
 				String cmd="/post ";
 				if(cmd.length()>line.length())
 					return;
@@ -181,8 +155,6 @@ public class ChatRoomClient extends StreamHandler {
 	 private ReadLineHandler<StreamHandler> entRespRemove=new ReadLineHandler<StreamHandler>() {		
 			@Override
 			public void action(StreamHandler sender, String line) {
-				//ChatRoomClient user=(ChatRoomClient)sender;
-				//System.out.println(line);
 				String cmd="/remove ";
 				if(cmd.length()>line.length())
 					return;
@@ -240,5 +212,4 @@ public class ChatRoomClient extends StreamHandler {
 			 }
 			return str;
 		 }
-
 }
