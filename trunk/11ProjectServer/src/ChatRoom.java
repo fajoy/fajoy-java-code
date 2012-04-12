@@ -2,13 +2,13 @@ import java.io.*;
 import java.net.Socket;
 import java.util.*;
 
-
 public class ChatRoom extends ServerCore{
 	public Map<String, ChatUser>users=new HashMap<String, ChatUser>();
 	public Map<Integer,ChatPost>posts=new HashMap<Integer, ChatPost>();
 	public StreamHandler sys=null;
 	public StreamHandler con_log=null;
 	public int flowMsgID=0;
+	public int flowConID=0;
 	public ChatRoom(int port) throws IOException {
 		super(port);
 		sys=new StreamHandler(System.in, System.out);
@@ -30,18 +30,21 @@ public class ChatRoom extends ServerCore{
 		while(true){
 			try {
 				Socket socket=accept();
-				con_log.writeLine(String.format("%s/%d\t%d",socket.getInetAddress().getHostAddress(),socket.getPort(),++this.flowLogID));
-				con_log.flush();
 				ChatUser user=new ChatUser(this,socket);
+				user.conID=++this.flowConID;
 				addClient(user);
 				user.beginLogin();
+				String msg=String.format("%s/%d\t%d",socket.getInetAddress().getHostAddress(),socket.getPort(),user.conID);
+				con_log.writeLine(msg);
+				con_log.flush();
+				sys.writeLine(String.format("%s is Connect.",msg));
+				sys.flush();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 	
-
 	public ChatUser getUser(String userName){
 		return this.users.get(userName);
 	}

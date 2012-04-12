@@ -1,5 +1,3 @@
-import java.io.IOException;
-import java.net.*;
 public class ChatPost {
 	public String userName=null;
 	public String value=null;
@@ -8,7 +6,5 @@ public class ChatPost {
 		this.userName=userName;
 		this.msgid=msgid;
 		this.value=value;
-	}
-
-	
+	}	
 }
