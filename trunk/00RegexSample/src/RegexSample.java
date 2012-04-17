@@ -6,12 +6,6 @@ public class RegexSample {
 		Pattern pattern =Pattern.compile( "\\b(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\b");
 		String input1 = "127.0.0.1 is localhost 192.168.0.1 is LAN";
 		RegexHelper.printResult(pattern, input1);
-		
-		pattern =Pattern.compile( "^([\\S]+) ([\\S]+) ([\\S]+) (.+)$");
-		input1 = "/msg test ss ss     ";
-		pattern =Pattern.compile( "^([\\S]+) ([\\S]+) (.+)");
-		input1 = "/post test ";
-		RegexHelper.printResult(pattern, input1);
 	}
 
 	public static class RegexHelper {
