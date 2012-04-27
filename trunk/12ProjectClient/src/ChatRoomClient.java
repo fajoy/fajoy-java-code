@@ -9,7 +9,7 @@ import widgets.RectangleWidget;
 import widgets.Widget;
 
 public class ChatRoomClient extends StreamHandler {
-	public Map<String, ChatPost> posts = new HashMap<String, ChatPost>();
+	public Map<String, ChatPost> posts = new LinkedHashMap<String, ChatPost>();
 	Socket sock=null;
 	public MainFrame sys = null;
 	public boolean isLeave = false;

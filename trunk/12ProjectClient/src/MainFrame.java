@@ -22,7 +22,7 @@ public class MainFrame extends JFrame{
 	public JPanel selectPnl=null;
 	public int sX=0;
 	public int sY=0;
-	public Map<Widget,ChatPost> postObj=new HashMap<Widget,ChatPost>(); 
+	public Map<Widget,ChatPost> postObj=new LinkedHashMap<Widget,ChatPost>(); 
 	void InitializeComponent(){
 		setTitle("mainFrame");
 		setSize(750,600);
@@ -213,9 +213,7 @@ public class MainFrame extends JFrame{
 				}
 				if(ChatClient.server==null)
 					return;
-				if(!ChatClient.server.isLogin)
-					return;
-				if(!ChatClient.server.userName.equals(post.userName))
+				if(ChatClient.server.isLeave)
 					return;
 				ChatClient.server.invokeMove(post,x,y);
 				
@@ -267,9 +265,13 @@ public class MainFrame extends JFrame{
 			Widget w=(Widget)post.value;
 			postObj.put(w,post);
 			pnlWhiteBorad.add(w,0,0);
+			pnlWhiteBoradResize();
+			if(!ChatClient.server.isLogin)
+				return;
+			if(!ChatClient.server.userName.equals(post.userName))
+				return;
 			w.addMouseListener(mouseAdapter);
 			w.addMouseMotionListener(mouseAdapter);
-			pnlWhiteBoradResize();
 		}
 		if(post.value instanceof JugglerWidget){
 			((JugglerWidget)post.value).start();
