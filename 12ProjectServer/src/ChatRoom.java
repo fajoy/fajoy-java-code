@@ -3,8 +3,8 @@ import java.net.Socket;
 import java.util.*;
 
 public class ChatRoom extends ServerCore{
-	public Map<String,ChatUser>users=new HashMap<String, ChatUser>();
-	public Map<String,ChatPost>posts=new HashMap<String, ChatPost>();
+	public Map<String,ChatUser>users=new LinkedHashMap<String, ChatUser>();
+	public Map<String,ChatPost>posts=new LinkedHashMap<String, ChatPost>();
 	public StreamHandler sys=null;
 	public StreamHandler con_log=null;
 	public int flowMsgID=0;
