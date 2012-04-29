@@ -297,20 +297,31 @@ public class ChatUser extends StreamHandler {
 					// /post RectangleWidget 10 10 #000000 100 100
 					// /post CircleWidget 10 10 #000000 #0000FF 3
 					// /post JugglerWidget 10 10 #000000 100 100
-					args = RegexHelper.getSubString(pat3, args[2]);
+					
 					Widget w = null;
 					try {
+						args = RegexHelper.getSubString(pat2, args[2]);
 						int x = Integer.parseInt(args[1]);
-						int y = Integer.parseInt(args[2]);
-						String cmd = args[3];
+						String args2[] = RegexHelper.getSubString(pat2, args[2]);
+						int y = 0;
+						String cmd="";
+						if(args2==null){
+							y=Integer.parseInt(args[2]);
+						}else{
+							y=Integer.parseInt(args2[1]);
+							cmd=args2[2];
+						}
+						x=(x<0)?0:x;
+						y=(y<0)?0:y;
 						if(type.equals("RectangleWidget"))
-						 w=new RectangleWidget();
+							 w=new RectangleWidget();
 						if(type.equals("CircleWidget"))
-							 w=new CircleWidget();
+								 w=new CircleWidget();
 						if(type.equals("JugglerWidget"))
-							 w=new JugglerWidget();
+								 w=new JugglerWidget();
 						w.setLocation(x, y);
-						w.parseCommand(cmd);
+						if(cmd.equals(""))
+							w.parseCommand(cmd);
 
 					} catch (Exception e) {
 						user.writeLine(String.format(
@@ -362,6 +373,9 @@ public class ChatUser extends StreamHandler {
 					args = RegexHelper.getSubString(pat2, args[2]);
 					int x=Integer.parseInt(args[1]);
 					int y=Integer.parseInt(args[2]);
+					x=(x<0)?0:x;
+					y=(y<0)?0:y;
+					
 					w.setLocation(x,y);
 				}catch (Exception e) {
 					user.writeLine("/msg Error: Move format error.");

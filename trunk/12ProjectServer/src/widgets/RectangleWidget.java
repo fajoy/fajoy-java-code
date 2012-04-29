@@ -1,7 +1,7 @@
 package widgets;
 
-
 import java.awt.Color;
+import java.awt.Graphics;
 
 public class RectangleWidget extends Widget {
 
@@ -67,10 +67,16 @@ public class RectangleWidget extends Widget {
 	public void setwbBackColor(Color wbBackColor) {
 		this.wbBackColor = wbBackColor;
 	}
+	public void paint(Graphics g)
+	{
+        super.paint(g);
+        g.setColor(wbBackColor);
+        setBackground(wbBackColor);
+        setSize(wbWidth, wbHeight);
+    }
 	private String getHexColor(Color cColor)
 	{
         return String.format("#%02x%02x%02x", 
         		cColor.getRed(), cColor.getGreen(), cColor.getBlue() ) ;
 	}
-	
 }
