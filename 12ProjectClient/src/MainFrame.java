@@ -190,7 +190,22 @@ public class MainFrame extends JFrame{
 		public void mouseReleased(MouseEvent e) {
 			if(selectPnl==null)
 				return;
-
+			int x= e.getXOnScreen()-selectPnl.getParent().getLocationOnScreen().x-sX;
+			int y= e.getYOnScreen()-selectPnl.getParent().getLocationOnScreen().y-sY;
+			if(x<0)x=0;
+			if(y<0)y=0;
+			ChatPost post=postObj.get(selectPnl);
+			if(post==null){
+				//System.out.println("x:"+x+" y:"+y );
+				selectPnl.setLocation(x, y);
+				pnlWhiteBoradResize();	
+				return;
+			}
+			if(ChatClient.server==null)
+				return;
+			if(ChatClient.server.isLeave)
+				return;
+			ChatClient.server.invokeMove(post,x,y);
 			pnlWhiteBorad.scrollRectToVisible(selectPnl.getBounds());
 			selectPnl=null;
 			System.out.println("Released obj");
@@ -204,6 +219,9 @@ public class MainFrame extends JFrame{
 				int y= e.getYOnScreen()-selectPnl.getParent().getLocationOnScreen().y-sY;
 				if(x<0)x=0;
 				if(y<0)y=0;
+				selectPnl.setLocation(x,y);
+				pnlWhiteBoradResize();
+				/*
 				ChatPost post=postObj.get(selectPnl);
 				if(post==null){
 					//System.out.println("x:"+x+" y:"+y );
@@ -216,7 +234,7 @@ public class MainFrame extends JFrame{
 				if(ChatClient.server.isLeave)
 					return;
 				ChatClient.server.invokeMove(post,x,y);
-				
+				*/
 			}
 			
 			super.mouseDragged(e);
