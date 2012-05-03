@@ -1,3 +1,3 @@
 public interface ReadLineHandler<T> {
-	public void action(T sender,String line);
+	public boolean action(T sender,String line);
 }

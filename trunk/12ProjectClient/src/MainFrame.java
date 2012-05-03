@@ -332,7 +332,7 @@ public class MainFrame extends JFrame{
 			w.addMouseMotionListener(mouseAdapter);
 		}
 		if(post.value instanceof JugglerWidget){
-			((JugglerWidget)post.value).start();
+			((JugglerWidget)post.value).repaint();
 		}
 	}
 	public void moveWidget(ChatPost post,int x,int y){
