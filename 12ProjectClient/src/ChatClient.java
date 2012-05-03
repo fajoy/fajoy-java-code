@@ -7,6 +7,7 @@ public class ChatClient {
 	public static void main(String[] args) throws InterruptedException {
 		mainFrame=new MainFrame();
 		mainFrame.setVisible(true);
+
 		int port =7010;
 		String host="localhost";
 		if(args.length>1){

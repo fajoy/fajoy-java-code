@@ -36,13 +36,13 @@ public class MainFrame extends JFrame{
 		pnl.setBounds(500, 0, 180, 300);
 		pnlFrame.add(pnl);
 		pnl.setLayout(new GridLayout(3, 0, 0, 0));
-		btn1 = new JButton("btn1");
+		btn1 = new JButton("Rectangle");
 		pnl.add(btn1);		
-		btn2 = new JButton("btn2");
+		btn2 = new JButton("Circle");
 		pnl.add(btn2);
-		btn3 = new JButton("btn3");
+		btn3 = new JButton("Juggler");
 		pnl.add(btn3);
-		
+
 		txtArea = new JTextArea(8,50);
 		JScrollPane scrollPane=new JScrollPane(txtArea,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setBounds(0, 306, 675, 175);
@@ -57,6 +57,34 @@ public class MainFrame extends JFrame{
 		label.setBounds(20, 487, 69, 23);
 		pnlFrame.add(label);
 		
+		/*
+		SpringLayout sl_contentPane = new SpringLayout();
+		sl_contentPane.putConstraint(SpringLayout.WEST, this.scrollPane, 0, SpringLayout.NORTH, pnlFrame);
+		sl_contentPane.putConstraint(SpringLayout.EAST, this.scrollPane, 500, SpringLayout.NORTH, pnlFrame);
+		sl_contentPane.putConstraint(SpringLayout.NORTH, this.scrollPane, 0, SpringLayout.NORTH, pnlFrame);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, this.scrollPane, 300, SpringLayout.NORTH, pnlFrame);
+		
+		
+		sl_contentPane.putConstraint(SpringLayout.WEST, pnl, 0, SpringLayout.EAST, this.scrollPane);
+		sl_contentPane.putConstraint(SpringLayout.EAST, pnl, 0, SpringLayout.EAST, pnlFrame);
+		sl_contentPane.putConstraint(SpringLayout.NORTH, pnl, 0, SpringLayout.NORTH, pnlFrame);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, pnl, 0, SpringLayout.NORTH, scrollPane);
+		
+		
+		sl_contentPane.putConstraint(SpringLayout.WEST, scrollPane, 0, SpringLayout.WEST, pnlFrame);
+		sl_contentPane.putConstraint(SpringLayout.EAST, scrollPane, 0, SpringLayout.EAST, pnlFrame);
+		sl_contentPane.putConstraint(SpringLayout.NORTH, scrollPane, 0, SpringLayout.SOUTH, this.scrollPane);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, scrollPane, 0, SpringLayout.NORTH, txtField);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, label, 0, SpringLayout.SOUTH, pnlFrame);
+		sl_contentPane.putConstraint(SpringLayout.WEST, label, 0, SpringLayout.WEST, pnlFrame);
+		
+		
+		sl_contentPane.putConstraint(SpringLayout.EAST, txtField, 0, SpringLayout.EAST, pnlFrame);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, txtField, 0, SpringLayout.SOUTH, pnlFrame);
+		sl_contentPane.putConstraint(SpringLayout.WEST, txtField, 0, SpringLayout.EAST, label);
+		
+		pnlFrame.setLayout(sl_contentPane);
+		*/
 	}
 	public MainFrame(){
 		InitializeComponent();
@@ -64,7 +92,6 @@ public class MainFrame extends JFrame{
 		btn2.addActionListener(actionListener);
 		btn3.addActionListener(actionListener);
 		txtField.addKeyListener(keyAdapter);
-		
 	}
 
 	

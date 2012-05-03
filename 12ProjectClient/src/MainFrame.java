@@ -10,6 +10,7 @@ import widgets.RectangleWidget;
 import widgets.Widget;
 public class MainFrame extends JFrame{
 	private JPanel pnlFrame = new JPanel();
+	public ChatRoomClient server=null;
 	public JButton btn1;
 	public JButton btn2;
 	public JButton btn3;
@@ -67,6 +68,43 @@ public class MainFrame extends JFrame{
 		label.setBounds(20, 487, 69, 23);
 		pnlFrame.add(label);
 		
+		SpringLayout sl_contentPane = new SpringLayout();
+		sl_contentPane.putConstraint(SpringLayout.WEST, this.scrollPane, 3, SpringLayout.WEST, pnlFrame);
+		sl_contentPane.putConstraint(SpringLayout.EAST, this.scrollPane, 503, SpringLayout.WEST, pnlFrame);
+		sl_contentPane.putConstraint(SpringLayout.NORTH, this.scrollPane, 3, SpringLayout.NORTH, pnlFrame);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, this.scrollPane, 303, SpringLayout.NORTH, pnlFrame);
+		
+		
+		sl_contentPane.putConstraint(SpringLayout.WEST, pnl, 3, SpringLayout.EAST, this.scrollPane);
+		sl_contentPane.putConstraint(SpringLayout.EAST, pnl, -3, SpringLayout.EAST, pnlFrame);
+		sl_contentPane.putConstraint(SpringLayout.NORTH, pnl, 3, SpringLayout.NORTH, pnlFrame);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, pnl, 0, SpringLayout.SOUTH, this.scrollPane);
+		
+		
+		sl_contentPane.putConstraint(SpringLayout.WEST, label, 3, SpringLayout.WEST, pnlFrame);
+		sl_contentPane.putConstraint(SpringLayout.EAST, label, 53, SpringLayout.WEST, pnlFrame);
+		sl_contentPane.putConstraint(SpringLayout.NORTH, label,-33, SpringLayout.SOUTH, pnlFrame);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, label,-3, SpringLayout.SOUTH, pnlFrame);
+		
+
+		sl_contentPane.putConstraint(SpringLayout.WEST, txtField, 0, SpringLayout.EAST, label);
+		sl_contentPane.putConstraint(SpringLayout.EAST, txtField, -3, SpringLayout.EAST, pnlFrame);
+		sl_contentPane.putConstraint(SpringLayout.NORTH, txtField, 0, SpringLayout.NORTH, label);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, txtField, 0, SpringLayout.SOUTH, label);
+		
+		sl_contentPane.putConstraint(SpringLayout.WEST, scrollPane, 3, SpringLayout.WEST, pnlFrame);
+		sl_contentPane.putConstraint(SpringLayout.EAST, scrollPane, -3, SpringLayout.EAST, pnlFrame);
+		sl_contentPane.putConstraint(SpringLayout.NORTH, scrollPane, 3, SpringLayout.SOUTH, this.scrollPane);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, scrollPane, -3, SpringLayout.NORTH, label);
+		
+		
+		
+		
+		
+		
+		
+		pnlFrame.setLayout(sl_contentPane);
+		
 	}
 	public MainFrame(){
 		InitializeComponent();
@@ -111,7 +149,8 @@ public class MainFrame extends JFrame{
           }
         };
 	WindowAdapter windowAdapter=new WindowAdapter() {
-		@Override public void windowClosing(WindowEvent e) {
+		@Override
+		public void windowClosing(WindowEvent e) {
 			System.exit(0);
 		};
 	};
@@ -158,12 +197,6 @@ public class MainFrame extends JFrame{
 			sY=e.getY();
 			System.out.println("Pressed obj" );
 			}
-
-			//super.mousePressed(e);
-		}
-
-		@Override 
-		public void mouseClicked(MouseEvent e) {
 			if(e.getComponent()==pnlWhiteBorad){
 				Widget w=null;
 				if(selectBtn==btn1){
@@ -185,6 +218,13 @@ public class MainFrame extends JFrame{
 					return;
 				ChatClient.server.invokePost(w);
 			}
+
+			//super.mousePressed(e);
+		}
+
+		@Override 
+		public void mouseClicked(MouseEvent e) {
+			
 		};
 		@Override
 		public void mouseReleased(MouseEvent e) {
@@ -258,7 +298,7 @@ public class MainFrame extends JFrame{
 	}
 	
 	public void beginLogin() throws InterruptedException{
-		ChatClient.server.beginLogin();
+		server.beginLogin();
 	}
 	public void writeLine(String msg){
 		txtArea.append(msg);
