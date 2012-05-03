@@ -320,9 +320,9 @@ public class ChatUser extends StreamHandler {
 						if(type.equals("JugglerWidget"))
 								 w=new JugglerWidget();
 						w.setLocation(x, y);
-						if(cmd.equals(""))
+						if(!cmd.equals("")){
 							w.parseCommand(cmd);
-
+						}
 					} catch (Exception e) {
 						user.writeLine(String.format(
 								"/msg Error: Post %s format error.", type));
