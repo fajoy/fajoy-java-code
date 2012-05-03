@@ -6,6 +6,7 @@ public class SortSample {
 	public static void main(String[] args) {
 		SortSample s=new SortSample();
 		s.show();
+		System.out.println("sort");
 		s.sort();
 		s.show();
 	}
@@ -48,3 +49,27 @@ public class SortSample {
 		}
 	}
 }
+
+/* 執行結果
+0:9
+1:8
+2:7
+3:6
+4:5
+6:3
+7:0
+8:1
+9:2
+5:4
+sort
+7:0
+8:1
+9:2
+6:3
+5:4
+4:5
+3:6
+2:7
+1:8
+0:9
+*/

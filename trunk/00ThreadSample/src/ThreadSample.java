@@ -76,3 +76,45 @@ public class ThreadSample {
 	}
 
 }
+/* 執行結果
+Thread Id=8,i=1,j=0
+Thread Id=9,i=2,j=0
+Thread Id=9,i=3,j=1
+Child t1 is waki up.
+Thread Id=8,i=4,j=1
+Thread Id=9,i=5,j=2
+Child t1 is waki up.
+Thread Id=8,i=6,j=2
+MainThread is wake up.
+Thread Id=9,i=7,j=3
+Child t1 is waki up.
+Thread Id=8,i=8,j=3
+Thread Id=9,i=9,j=4
+Child t1 is waki up.
+Thread Id=8,i=10,j=4
+MainThread is wake up.
+Child t2 is sleep.
+MainThread is wake up.
+MainThread is wake up.
+MainThread is wake up.
+MainThread is wake up.
+Thread Id=9,i=11,j=5
+Child t1 is Interrupted.
+Thread Id=8,i=12,j=5
+Thread Id=9,i=13,j=6
+Child t1 is waki up.
+Thread Id=8,i=14,j=6
+Thread Id=9,i=15,j=7
+Child t1 is waki up.
+Thread Id=8,i=16,j=7
+MainThread is wake up.
+Thread Id=9,i=17,j=8
+Child t1 is waki up.
+Thread Id=8,i=18,j=8
+Thread Id=9,i=19,j=9
+Child t1 is waki up.
+Thread Id=8,i=20,j=9
+MainThread is interrupt
+MainThread is interrupt
+Main is Over.
+*/
