@@ -43,7 +43,7 @@ public class ChatUser extends StreamHandler {
 
 	private ReadLineHandler<StreamHandler> entReqUserName = new ReadLineHandler<StreamHandler>() {
 		@Override
-		public void action(StreamHandler sender, String line) {
+		public boolean action(StreamHandler sender, String line) {
 			ChatUser user = (ChatUser) sender;
 			line = line.replace(" ", "");
 			line = line.replace("/", "");
@@ -51,7 +51,7 @@ public class ChatUser extends StreamHandler {
 				user.writeLine("/msg Error: No username is input.");
 				user.writeLine("/msg Username:");
 				user.flush();
-				return;
+				return true;
 			}
 
 			if (room.getUser(line) != null) {
@@ -95,6 +95,7 @@ public class ChatUser extends StreamHandler {
 						user.sock.getPort(), user.userName);
 				user.showMsg(msg);
 			}
+			return true;
 		}
 	};
 
@@ -162,43 +163,55 @@ public class ChatUser extends StreamHandler {
 		}
 
 		@Override
-		public void action(StreamHandler sender, String line) {
+		public boolean action(StreamHandler sender, String line) {
 			String[] args = RegexHelper.getSubString(pat1, line);
 			if (args == null)
-				return;
+				return false;
 			ReadLineHandler<StreamHandler> cmd = cmdHandler.get(args[1]);
-			if (cmd == null)
-				return;
-			cmd.action(sender, line);
+			if (cmd == null){
+				sender.writeLine(String.format("/msg (Unknow CMD): %s",line));
+				sender.flush();
+				showMsg(String.format("%s(Unknow CMD): %s", ChatUser.this.userName,line));
+				return false;
+			}
+			if (!cmd.action(sender, line)){
+				sender.writeLine(String.format("(/msg Error format CMD): %s",line));
+				sender.flush();
+				showMsg(String.format("%s(Error format CMD): %s", ChatUser.this.userName,line));
+				return false;
+			}
+			return true;
+			
 		}
 
 		private ReadLineHandler<StreamHandler> entReqYell = new ReadLineHandler<StreamHandler>() {
 			@Override
-			public void action(StreamHandler sender, String line) {
+			public boolean action(StreamHandler sender, String line) {
 				ChatUser user = (ChatUser) sender;
 				String[] args = RegexHelper.getSubString(pat2, line);
 				if (args == null)
-					return;
+					return false;
 				String msg = args[2];
 				room.castWriteLine(String.format("/msg %s yelled: %s",
 						user.userName, msg));
+				return true;
 			}
 		};
 
 		private ReadLineHandler<StreamHandler> entReqTell = new ReadLineHandler<StreamHandler>() {
 			@Override
-			public void action(StreamHandler sender, String line) {
+			public boolean action(StreamHandler sender, String line) {
 				ChatUser user = (ChatUser) sender;
 				String[] args = RegexHelper.getSubString(pat2, line);
 				if (args == null)
-					return;
+					return false;
 				args = RegexHelper.getSubString(pat2, args[2]);
 				if (args == null) {
 					String err = String
 							.format("/msg Error: No target was given.");
 					user.writeLine(err);
 					user.flush();
-					return;
+					return true;
 				}
 				String username = args[1];
 				ChatUser u = room.getUser(username);
@@ -208,17 +221,18 @@ public class ChatUser extends StreamHandler {
 							username);
 					user.writeLine(err);
 					user.flush();
-					return;
+					return true;
 				}
 				String msg = args[2];
 				u.writeLine(String.format("/msg %s told %s: %s", user.userName,
 						u.userName, msg));
 				u.flush();
+				return true;
 			}
 		};
 		private ReadLineHandler<StreamHandler> entReqWho = new ReadLineHandler<StreamHandler>() {
 			@Override
-			public void action(StreamHandler sender, String line) {
+			public boolean action(StreamHandler sender, String line) {
 				ChatUser user = (ChatUser) sender;
 				user.writeLine("/msg Name\tIP/port");
 				for (Object obj : room.clients.toArray()) {
@@ -242,46 +256,48 @@ public class ChatUser extends StreamHandler {
 										.getHostAddress(), u.sock.getPort()));
 				}
 				user.flush();
+				return true;
 			}
 		};
 
 		private ReadLineHandler<StreamHandler> entReqRemove = new ReadLineHandler<StreamHandler>() {
 			@Override
-			public void action(StreamHandler sender, String line) {
+			public boolean action(StreamHandler sender, String line) {
 				ChatUser user = (ChatUser) sender;
 				String[] args = RegexHelper.getSubString(pat2, line);
 				if (args == null)
-					return;
+					return false;
 				String postid = args[2];
 				ChatPost post = room.posts.get(postid);
 				if (post == null) {
 					user.writeLine("/msg Error: No such msg id.");
 					user.flush();
-					return;
+					return true;
 				}
 				if(!post.userName.equals(user.userName)){
 					user.writeLine("/msg Error: No Permissions.");
 					user.flush();
-					return;
+					return true;
 				}
 				room.posts.remove(postid);
 				room.castWriteLine(String.format("/remove %s %s",
 						user.userName, post.msgid));
+				return true;
 			}
 		};
 
 		private ReadLineHandler<StreamHandler> entReqPost = new ReadLineHandler<StreamHandler>() {
 			@Override
-			public void action(StreamHandler sender, String line) {
+			public boolean action(StreamHandler sender, String line) {
 				ChatUser user = (ChatUser) sender;
 				String[] args = RegexHelper.getSubString(pat2, line);
 				if (args == null)
-					return;
+					return false;
 				args = RegexHelper.getSubString(pat2, args[2]);
 				if (args == null) {
 					user.writeLine("/msg Error: No post type.");
 					user.flush();
-					return;
+					return true;
 				}
 				String type = args[1];
 				Object value = null;
@@ -327,7 +343,7 @@ public class ChatUser extends StreamHandler {
 						user.writeLine(String.format(
 								"/msg Error: Post %s format error.", type));
 						user.flush();
-						return;
+						return true;
 					}
 					value = w;
 				}
@@ -335,38 +351,38 @@ public class ChatUser extends StreamHandler {
 				if (value == null) {
 					user.writeLine("/msg Error: No such post type.");
 					user.flush();
-					return;
+					return true;
 				}
 				ChatPost post = new ChatPost(user.userName,String.valueOf(++room.flowMsgID), type, value);
 				room.posts.put(post.msgid, post);
 				room.castWriteLine(String.format("/post %s %s %s %s",	user.userName, post.msgid, post.type,post.toString()));
-
+				return true;
 			}
 		};
 		private ReadLineHandler<StreamHandler> entReqMove = new ReadLineHandler<StreamHandler>() {
 			@Override
-			public void action(StreamHandler sender, String line) {
+			public boolean action(StreamHandler sender, String line) {
 				ChatUser user = (ChatUser) sender;
 				String[] args = RegexHelper.getSubString(pat2, line);
 				if (args == null)
-					return;
+					return false;
 				args = RegexHelper.getSubString(pat2,args[2]);
 				String postid = args[1];
 				ChatPost post = room.posts.get(postid);
 				if (post == null) {
 					user.writeLine("/msg Error: No such msg id.");
 					user.flush();
-					return;
+					return true;
 				}
 				if(!(post.value instanceof Widget)){
 					user.writeLine("/msg Error: No post isn't Widget.");
 					user.flush();
-					return;
+					return true;
 				}
 				if(!post.userName.equals(user.userName)){
 					user.writeLine("/msg Error: No Permissions.");
 					user.flush();
-					return;
+					return true;
 				}
 				Widget w=(Widget)post.value;
 				try{
@@ -380,18 +396,19 @@ public class ChatUser extends StreamHandler {
 				}catch (Exception e) {
 					user.writeLine("/msg Error: Move format error.");
 					user.flush();
-					return;
+					return true;
 				}
 				room.castWriteLine(String.format("/move %s %s %s", post.msgid,w.getX(),w.getY()));
+				return true;
 			}
 		};
 		private ReadLineHandler<StreamHandler> entReqKick = new ReadLineHandler<StreamHandler>() {
 			@Override
-			public void action(StreamHandler sender, String line) {
+			public boolean action(StreamHandler sender, String line) {
 				ChatUser user = (ChatUser) sender;
 				String[] args = RegexHelper.getSubString(pat2, line);
 				if (args == null)
-					return;
+					return false;
 				String username = args[2];
 				ChatUser u = room.getUser(username);
 				if (u == null) {
@@ -400,7 +417,7 @@ public class ChatUser extends StreamHandler {
 							username);
 					user.writeLine(err);
 					user.flush();
-					return;
+					return true;
 				}
 				String cast = String.format("/kick %s", u.userName);
 				room.castWriteLine(cast);
@@ -408,14 +425,16 @@ public class ChatUser extends StreamHandler {
 				u.isKick = true;
 				room.users.remove(u.userName);
 				u.setReadLineHander(entReqLeave);
+				return true;
 			}
 		};
 
 		private ReadLineHandler<StreamHandler> entReqLeave = new ReadLineHandler<StreamHandler>() {
 			@Override
-			public void action(StreamHandler sender, String line) {
+			public boolean action(StreamHandler sender, String line) {
 				ChatUser user = (ChatUser) sender;
 				user.close();
+				return true;
 			}
 		};
 		
