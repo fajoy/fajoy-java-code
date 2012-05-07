@@ -3,10 +3,7 @@ import java.net.Socket;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import widgets.CircleWidget;
-import widgets.JugglerWidget;
-import widgets.RectangleWidget;
-import widgets.Widget;
+import widgets.*;
 
 public class ChatRoomClient extends StreamHandler {
 	public Map<String, ChatPost> posts = new LinkedHashMap<String, ChatPost>();
@@ -76,13 +73,13 @@ public class ChatRoomClient extends StreamHandler {
 							this.writeLine("/leave");
 							this.flush();
 							isLeave = true;
-							return;
 						}
 					} catch (Exception e) {
 						sys.writeLine("Connect string format error.");
 						sys.flush();
 						return;
 					}
+					return;
 				}
 			}
 
@@ -115,10 +112,11 @@ public class ChatRoomClient extends StreamHandler {
 		Object obj=value;
 		if (type.equals("RectangleWidget")
 				|| type.equals("CircleWidget")
-				|| type.equals("JugglerWidget")) {
+				|| type.equals("JugglerWidget")
+				|| type.equals("TimerWidget")) {
 			// /post username 101 ClassName x y data1 data2 ...
 			// /post username 101 RectangleWidget 10 10 #000000 100 100
-			String[] args = RegexHelper.getSubString(pat3, value);
+				String[] args = RegexHelper.getSubString(pat3, value);
 				Widget w = null;
 				int x = Integer.parseInt(args[1]);
 				int y = Integer.parseInt(args[2]);
@@ -129,6 +127,9 @@ public class ChatRoomClient extends StreamHandler {
 					 w=new CircleWidget();
 				if(type.equals("JugglerWidget"))
 					 w=new JugglerWidget();
+				if(type.equals("TimerWidget"))
+					 w=new TimerWidget();
+				
 				w.setLocation(x, y);
 				w.parseCommand(cmd);
 				obj = w;
@@ -157,6 +158,8 @@ public class ChatRoomClient extends StreamHandler {
 			type="CircleWidget";
 		if(w instanceof JugglerWidget)
 			type="JugglerWidget";
+		if(w instanceof TimerWidget)
+			type="TimerWidget";
 		this.writeLine(String.format("/post %s %d %d %s",type,w.getX(),w.getY(),w.toCommand()));
 		this.flush();
 	}
@@ -247,6 +250,7 @@ public class ChatRoomClient extends StreamHandler {
 			cmdHandler.put("/post", entRespPost);
 			cmdHandler.put("/remove", entRespRemove);
 			cmdHandler.put("/move", entRespMove);
+			//cmdHandler.put("/chp", entRespChp);
 			cmdHandler.put("/kick", entRespKick);
 		}
 
@@ -294,6 +298,37 @@ public class ChatRoomClient extends StreamHandler {
 				int y= Integer.parseInt(args[4]);
 				ChatPost post = posts.get(msgid);
 				ChatClient.mainFrame.moveWidget(post,x,y);
+			}
+		};
+		private ReadLineHandler<StreamHandler> entRespChp = new ReadLineHandler<StreamHandler>() {
+			@Override
+			public void action(StreamHandler sender, String line) {
+				String[] args = RegexHelper.getSubString(pat2, line);
+				args = RegexHelper.getSubString(pat2,args[2]);
+				String postid = args[1];
+				ChatPost post = posts.get(postid);
+				try{
+					Widget w=(Widget)post.value;
+					args = RegexHelper.getSubString(pat2, args[2]);
+					int x = Integer.parseInt(args[1]);
+					String args2[] = RegexHelper.getSubString(pat2, args[2]);
+					int y = 0;
+					String cmd="";
+					if(args2==null){
+						y=Integer.parseInt(args[2]);
+					}else{
+						y=Integer.parseInt(args2[1]);
+						cmd=args2[2];
+					}
+					w.setLocation(x,y);
+					w.parseCommand(cmd);
+					ChatClient.mainFrame.moveWidget(post,x,y);
+				}catch (Exception e) {
+					
+				}
+				
+				
+				
 			}
 		};
 		private ReadLineHandler<StreamHandler> entRespKick = new ReadLineHandler<StreamHandler>() {

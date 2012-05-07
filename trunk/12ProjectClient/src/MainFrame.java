@@ -4,10 +4,7 @@ import java.util.*;
 
 import javax.swing.*;
 
-import widgets.CircleWidget;
-import widgets.JugglerWidget;
-import widgets.RectangleWidget;
-import widgets.Widget;
+import widgets.*;
 public class MainFrame extends JFrame{
 	private JPanel contentPane = new JPanel();
 	public JButton btn1;
@@ -110,6 +107,7 @@ public class MainFrame extends JFrame{
 		btn1.addActionListener(actionListener);
 		btn2.addActionListener(actionListener);
 		btn3.addActionListener(actionListener);
+		btn4.addActionListener(actionListener);
 		txtField.addKeyListener(keyAdapter);
 		paneWhiteBorad.addMouseListener(mouseAdapter);
 	}
@@ -206,6 +204,9 @@ public class MainFrame extends JFrame{
 				}
 				if(selectBtn==btn3){
 					w=new JugglerWidget();
+				}
+				if(selectBtn==btn4){
+					w=new TimerWidget();
 				}
 				if(w==null)
 					return ;
