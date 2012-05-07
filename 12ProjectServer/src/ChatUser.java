@@ -158,6 +158,7 @@ public class ChatUser extends StreamHandler {
 			cmdHandler.put("/post", entReqPost);
 			cmdHandler.put("/remove", entReqRemove);
 			cmdHandler.put("/move", entReqMove);
+			//cmdHandler.put("/chp", entReqChp);
 			cmdHandler.put("/kick", entReqKick);
 			cmdHandler.put("/leave", entReqLeave);
 		}
@@ -170,16 +171,17 @@ public class ChatUser extends StreamHandler {
 			ReadLineHandler<StreamHandler> cmd = cmdHandler.get(args[1]);
 			if (cmd == null){
 				sender.writeLine(String.format("/msg (Unknow CMD): %s",line));
-				sender.flush();
 				showMsg(String.format("%s(Unknow CMD): %s", ChatUser.this.userName,line));
+				sender.flush();
 				return false;
 			}
 			if (!cmd.action(sender, line)){
-				sender.writeLine(String.format("(/msg Error format CMD): %s",line));
-				sender.flush();
+				sender.writeLine(String.format("/msg (Error format CMD): %s",line));				
 				showMsg(String.format("%s(Error format CMD): %s", ChatUser.this.userName,line));
+				sender.flush();
 				return false;
 			}
+			sender.flush();
 			return true;
 			
 		}
@@ -308,7 +310,8 @@ public class ChatUser extends StreamHandler {
 
 				if (type.equals("RectangleWidget")
 						|| type.equals("CircleWidget")
-						|| type.equals("JugglerWidget")) {
+						|| type.equals("JugglerWidget")
+						|| type.equals("TimerWidget")) {
 					// /post ClassName x y data1 data2 ...
 					// /post RectangleWidget 10 10 #000000 100 100
 					// /post CircleWidget 10 10 #000000 #0000FF 3
@@ -329,12 +332,17 @@ public class ChatUser extends StreamHandler {
 						}
 						x=(x<0)?0:x;
 						y=(y<0)?0:y;
+						x=(x>32767)?32767:x;
+						y=(y>32767)?32767:y;
 						if(type.equals("RectangleWidget"))
 							 w=new RectangleWidget();
 						if(type.equals("CircleWidget"))
 								 w=new CircleWidget();
 						if(type.equals("JugglerWidget"))
 								 w=new JugglerWidget();
+						if(type.equals("TimerWidget"))
+							 w=new TimerWidget();
+						
 						w.setLocation(x, y);
 						if(!cmd.equals("")){
 							w.parseCommand(cmd);
@@ -359,6 +367,56 @@ public class ChatUser extends StreamHandler {
 				return true;
 			}
 		};
+		private ReadLineHandler<StreamHandler> entReqChp = new ReadLineHandler<StreamHandler>() {
+			@Override
+			public boolean action(StreamHandler sender, String line) {
+				ChatUser user = (ChatUser) sender;
+				String[] args = RegexHelper.getSubString(pat2, line);
+				if (args == null)
+					return false;
+				args = RegexHelper.getSubString(pat2,args[2]);
+				String postid = args[1];
+				ChatPost post = room.posts.get(postid);
+				if (post == null) {
+					user.writeLine("/msg Error: No such msg id.");
+					user.flush();
+					return true;
+				}
+				if(!(post.value instanceof Widget)){
+					user.writeLine("/msg Error: No post isn't Widget.");
+					user.flush();
+					return true;
+				}
+				if(!post.userName.equals(user.userName)){
+					user.writeLine("/msg Error: No Permissions.");
+					user.flush();
+					return true;
+				}
+				Widget w=(Widget)post.value;
+				try{
+					args = RegexHelper.getSubString(pat2, args[2]);
+					int x = Integer.parseInt(args[1]);
+					String args2[] = RegexHelper.getSubString(pat2, args[2]);
+					int y = 0;
+					String cmd="";
+					if(args2==null){
+						y=Integer.parseInt(args[2]);
+					}else{
+						y=Integer.parseInt(args2[1]);
+						cmd=args2[2];
+					}
+					w.setLocation(x,y);
+					w.parseCommand(cmd);
+				}catch (Exception e) {
+					user.writeLine("/msg Error: Chp format error.");
+					user.flush();
+					return true;
+				}
+				room.castWriteLine(String.format("/chp %s %s %s %s", post.msgid,w.getX(),w.getY(),w.toCommand()));
+				return true;
+			}
+		};
+		
 		private ReadLineHandler<StreamHandler> entReqMove = new ReadLineHandler<StreamHandler>() {
 			@Override
 			public boolean action(StreamHandler sender, String line) {
