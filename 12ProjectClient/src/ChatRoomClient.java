@@ -109,41 +109,37 @@ public class ChatRoomClient extends StreamHandler {
 
 	public void setUserPost(String userName, String msgid, String type,
 			String value) {
-		Object obj=value;
-		if (type.equals("RectangleWidget")
-				|| type.equals("CircleWidget")
-				|| type.equals("JugglerWidget")
-				|| type.equals("TimerWidget")) {
-			// /post username 101 ClassName x y data1 data2 ...
-			// /post username 101 RectangleWidget 10 10 #000000 100 100
-				String[] args = RegexHelper.getSubString(pat3, value);
-				Widget w = null;
-				int x = Integer.parseInt(args[1]);
-				int y = Integer.parseInt(args[2]);
-				String cmd = args[3];
-				if(type.equals("RectangleWidget"))
-					w=new RectangleWidget();
-				if(type.equals("CircleWidget"))
-					 w=new CircleWidget();
-				if(type.equals("JugglerWidget"))
-					 w=new JugglerWidget();
-				if(type.equals("TimerWidget"))
-					 w=new TimerWidget();
-				
+			Object obj=value;
+
+		// /post username 101 ClassName x y data1 data2 ...
+		// /post username 101 RectangleWidget 10 10 #000000 100 100
+		try {
+			String[] args = RegexHelper.getSubString(pat3, value);
+			Widget w = null;
+			int x = Integer.parseInt(args[1]);
+			int y = Integer.parseInt(args[2]);
+			String cmd = args[3];
+
+			Class widgetClass = Class.forName("widgets." + type);
+			Object newobj = widgetClass.newInstance();
+			if (newobj instanceof Widget) {
+				w = (Widget) newobj;
 				w.setLocation(x, y);
 				w.parseCommand(cmd);
 				obj = w;
-				
+			}
+		} catch (Exception e) {
+
 		}
-		
+
 		ChatPost post = new ChatPost(userName, msgid, type, obj);
 		posts.put(msgid, post);
-		sys.writeLine(String.format("%s posted message '%s' in %s: %s",	post.userName, post.msgid, post.type, post.toString()));
+		sys.writeLine(String.format("%s posted message '%s' in %s: %s",
+				post.userName, post.msgid, post.type, post.toString()));
 		sys.flush();
-		if(post.value instanceof Widget){
+		if (post.value instanceof Widget) {
 			ChatClient.mainFrame.addWidget(post);
 		}
-		
 		
 	}
 	public void invokeMove(ChatPost post ,int x, int y){
@@ -184,12 +180,12 @@ public class ChatRoomClient extends StreamHandler {
 			user.isLogin = true;
 			try {
 				output_log = new StreamHandler(new FileOutputStream(
-						String.format("./output_%s.txt", user.userName), true));
+						String.format(getClass().getResource("./").getPath()+"output_%s.txt", user.userName), true));
 			} catch (Exception e) {
 			}
 			try {
 				input_log = new StreamHandler(new FileOutputStream(
-						String.format("./input_%s.txt", user.userName), true));
+						String.format(getClass().getResource("./").getPath()+"input_%s.txt", user.userName), true));
 			} catch (Exception e) {
 			}
 			user.clearReadLineHander();
