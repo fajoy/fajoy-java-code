@@ -121,12 +121,12 @@ public class ChatRoomClient extends StreamHandler {
 			user.isLogin = true;
 			try {
 				output_log = new StreamHandler(new FileOutputStream(
-						String.format("./output_%s.txt", user.userName), true));
+						String.format(getClass().getResource("./").getPath()+"output_%s.txt", user.userName), true));
 			} catch (Exception e) {
 			}
 			try {
 				input_log = new StreamHandler(new FileOutputStream(
-						String.format("./input_%s.txt", user.userName), true));
+						String.format(getClass().getResource("./").getPath()+"input_%s.txt", user.userName), true));
 			} catch (Exception e) {
 			}
 			user.clearReadLineHander();

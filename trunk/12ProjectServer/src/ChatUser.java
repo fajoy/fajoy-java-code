@@ -69,13 +69,13 @@ public class ChatUser extends StreamHandler {
 				user.isLogin = true;
 				try {
 					output_log = new StreamHandler(new FileOutputStream(
-							String.format("./output_%s.txt", user.userName),
+							String.format(getClass().getResource("./").getPath()+"output_%s.txt", user.userName),
 							true));
 				} catch (Exception e) {
 				}
 				try {
 					input_log = new StreamHandler(new FileOutputStream(
-							String.format("./input_%s.txt", user.userName),
+							String.format(getClass().getResource("./").getPath()+"input_%s.txt", user.userName),
 							true));
 				} catch (Exception e) {
 				}
@@ -334,18 +334,25 @@ public class ChatUser extends StreamHandler {
 						y=(y<0)?0:y;
 						x=(x>32767)?32767:x;
 						y=(y>32767)?32767:y;
-						if(type.equals("RectangleWidget"))
-							 w=new RectangleWidget();
-						if(type.equals("CircleWidget"))
-								 w=new CircleWidget();
-						if(type.equals("JugglerWidget"))
-								 w=new JugglerWidget();
-						if(type.equals("TimerWidget"))
-							 w=new TimerWidget();
-						
-						w.setLocation(x, y);
-						if(!cmd.equals("")){
-							w.parseCommand(cmd);
+						Class widgetClass=null;
+						try{
+						widgetClass=Class.forName("widgets."+type);
+						} catch (Exception e) {
+							user.writeLine(String.format(
+									"/msg Error: No such post type.", type));
+							user.flush();
+							return true;
+						}
+						Object obj=widgetClass.newInstance();
+						if(obj instanceof Widget)
+						{
+							w=(Widget)obj;
+							w.setLocation(x, y);
+							if(!cmd.equals("")){
+								w.parseCommand(cmd);
+							}
+						}else{
+							w=null;
 						}
 					} catch (Exception e) {
 						user.writeLine(String.format(

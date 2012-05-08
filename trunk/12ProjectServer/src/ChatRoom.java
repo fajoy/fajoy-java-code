@@ -17,7 +17,7 @@ public class ChatRoom extends ServerCore{
 	public void beginAccept(){
 		FileOutputStream os;
 		try {
-			os = new FileOutputStream("./connect_log.txt",false);
+			os = new FileOutputStream(getClass().getResource("./").getPath()+"connect_log.txt",false);
 			try {
 				con_log=new StreamHandler(os);
 			} catch (IOException e) {
