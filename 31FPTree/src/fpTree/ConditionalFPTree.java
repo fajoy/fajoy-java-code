@@ -30,7 +30,7 @@ public class ConditionalFPTree {
 		}
 
 		//create New ConditionalFPTree
-		//this.outputResult(minSupport);
+		this.outputResult(minSupport);
 		
 		//this.createCondtionlFPTree(minSupport);
 		

@@ -7,9 +7,11 @@ import fpTree.FPTree;
 import fpTree.HeadTable;
 public class FPTreeSample {
 	public static void main(String[] args) throws IOException {
+		test(1000);
+		/*
 		for(int i=1010;i>50;i-=10){
 			test(i);
-		}
+		}*/
 	}
 	
 	public static void test(int minSuport) throws IOException{
@@ -25,6 +27,7 @@ public class FPTreeSample {
 
 	public static String getFileName(String fileName){
 		URL url = FPTreeSample.class.getResource(fileName);
+		
 		return url.getFile();
 	}
 

@@ -1,6 +1,8 @@
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;        // 引用串流功能
 import java.io.IOException;            // 引用例外功能
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;    // 引用輸出串流功能
 import java.net.ServerSocket;         // 引用伺服器socket
 import java.net.Socket;                // 引用Socket網路功能
@@ -27,14 +29,14 @@ public class SocketServerSample {
             // 接受來自客戶端的連線
             Socket socket=serverSocket.accept();
  
-            // 初始化輸出網路串流
-            BufferedWriter bw=    new BufferedWriter( new OutputStreamWriter(socket.getOutputStream()));
+            // 接收來自Server的訊息 
+            BufferedReader  br=new BufferedReader(new InputStreamReader(socket.getInputStream()));
  
-            // 傳送訊息到客戶端
-            bw.write("Hello! This is sever msg.\n");
+            // 顯示收到的訊息
+            System.out.println(br.readLine());
+            
  
-            // 立即送出
-            bw.flush();
+        
         } catch (IOException e) {
             // 如果失敗則顯示"Socket Error"
             System.out.println("Socket ERROR");
