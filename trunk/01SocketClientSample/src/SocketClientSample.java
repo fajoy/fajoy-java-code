@@ -1,6 +1,8 @@
 import java.io.BufferedReader;        // 引用串流功能 
+import java.io.BufferedWriter;
 import java.io.IOException;            // 引用IO例外功能
 import java.io.InputStreamReader;    // 引用輸入串流讀取功能 
+import java.io.OutputStreamWriter;
 import java.net.InetAddress;        // 引用網路IP位址功能
 import java.net.Socket;    
 
@@ -24,12 +26,16 @@ public class SocketClientSample {
             // 初始socket連接
             Socket clientSocket=new Socket(serverIp,serverPort);
  
-            // 接收來自Server的訊息 
-            BufferedReader  br=new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
+            // 初始化輸出網路串流
+            BufferedWriter bw=    new BufferedWriter( new OutputStreamWriter(clientSocket.getOutputStream()));
  
-            // 顯示收到的訊息
-            System.out.println(br.readLine());
- 
+            // 傳送訊息到伺服器
+            bw.write("Hello! This is Client msg.\n");
+            
+            // 立即送出並清空緩衝區
+            bw.flush();
+            
             // 關閉連線
             clientSocket.close(); 
         } catch (IOException e) {

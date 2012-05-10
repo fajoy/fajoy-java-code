@@ -15,7 +15,6 @@ public class CombinationSample {
 	public BufferedWriter sys=new BufferedWriter(new OutputStreamWriter(System.out));
 	public CombinationSample() throws IOException {
 		String[] items = new String[] { "a", "b", "c", "d","e","f","g"};
-		
 		CombinationHelper h=new CombinationHelper(items.length,4,5);
 		int [] indexs=h.next();
 		while(indexs!=null){
