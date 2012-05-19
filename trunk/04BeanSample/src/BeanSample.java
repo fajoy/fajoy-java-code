@@ -49,6 +49,7 @@ int var_int = 10
 				String field_name = pd.getName(); // get property
 				
 				if(pd.getPropertyType()!=null)
+					if(pd.getReadMethod()!=null&&pd.getWriteMethod()!=null)
 					mapProperty.put(field_name, pd);
 			}
 		}
