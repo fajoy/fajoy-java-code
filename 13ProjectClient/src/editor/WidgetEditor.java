@@ -28,7 +28,7 @@ public class WidgetEditor extends JFrame implements BaseEditor{
 		paneProperty = new JPanel();
 
 
-		scrollProperty=new JScrollPane(paneProperty,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollProperty=new JScrollPane(paneProperty,ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollProperty.getHorizontalScrollBar().addAdjustmentListener(new AdjustmentListener() {
 			@Override
 			public void adjustmentValueChanged(AdjustmentEvent arg0) {
@@ -110,7 +110,7 @@ public class WidgetEditor extends JFrame implements BaseEditor{
 	public LinkedHashMap<String,JTextField> propertyFileds=new LinkedHashMap<String,JTextField>();
 	void updatePropertyField(){
 		for(String pname:propertyFileds.keySet()){
-			JTextField tf=(JTextField)propertyFileds.get(pname);
+			JTextField tf=propertyFileds.get(pname);
 			tf.setText(valueHelper.getProperty(pname).toString());
 		}
 	}
@@ -214,11 +214,13 @@ public class WidgetEditor extends JFrame implements BaseEditor{
 			}
 			
 			
-			//review widget
+			//debug use review widget
 			contentPane.add(this.retValue);
 			contentPaneLayout.putConstraint(SpringLayout.WEST, this.retValue, 3, SpringLayout.WEST,contentPane );
 			contentPaneLayout.putConstraint(SpringLayout.NORTH, this.retValue, 3, SpringLayout.SOUTH, scrollProperty);
 			contentPane.setLayout(contentPaneLayout);
+			//demo time please delete
+			
 			
 			this.setVisible(true);
 			while(this.isVisible()){
