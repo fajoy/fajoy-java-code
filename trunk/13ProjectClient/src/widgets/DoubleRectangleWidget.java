@@ -77,6 +77,7 @@ public class DoubleRectangleWidget extends Widget{
 		
 		
 	}
+	@Override
 	public void paint(Graphics g)
     {
         super.paint(g);

@@ -1,7 +1,5 @@
 import java.io.IOException;
 
-import editor.WidgetEditor;
-
 
 public class ChatClient {
 	static ChatRoomClient server=null;

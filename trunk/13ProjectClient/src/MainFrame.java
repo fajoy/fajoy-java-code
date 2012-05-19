@@ -36,7 +36,7 @@ public class MainFrame extends JFrame{
 		
 		paneWhiteBorad.setLayout(null);
 		paneWhiteBorad.setBackground(Color.white);
-		scrollPaneWhiteBorad=new JScrollPane(paneWhiteBorad,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		scrollPaneWhiteBorad=new JScrollPane(paneWhiteBorad,ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPaneWhiteBorad.setBounds(0, 0, 500, 300);
 		
 		
@@ -55,7 +55,7 @@ public class MainFrame extends JFrame{
 		btn4 = new JButton("???");
 		pnl.add(btn4);
 		txtArea = new JTextArea(8,50);
-		JScrollPane scrollPaneTxtArea=new JScrollPane(txtArea,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		JScrollPane scrollPaneTxtArea=new JScrollPane(txtArea,ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPaneTxtArea.setBounds(0, 306, 675, 175);
 		
 		contentPane.add(scrollPaneTxtArea);
@@ -119,7 +119,8 @@ public class MainFrame extends JFrame{
 	
 	
 	KeyAdapter keyAdapter=new KeyAdapter() {
-        public void keyPressed(KeyEvent e) {
+        @Override
+		public void keyPressed(KeyEvent e) {
           int key = e.getKeyCode();
           if(txtArea.getText().length()>4096)
         	  txtArea.setText("");
@@ -221,6 +222,7 @@ public class MainFrame extends JFrame{
 					newobj= widgetClass.newInstance();
 				} catch (Exception e1) {
 					e1.printStackTrace();
+					return;
 				}
 				final int wx=e.getX();
 				final int wy=e.getY();
@@ -304,6 +306,7 @@ public class MainFrame extends JFrame{
 			//super.mouseReleased(e);
 		}
 		
+		@Override
 		public void mouseDragged(MouseEvent e) {
 			if(selectPane==e.getSource()){
 				int x= e.getXOnScreen()-selectPane.getParent().getLocationOnScreen().x-sX;
