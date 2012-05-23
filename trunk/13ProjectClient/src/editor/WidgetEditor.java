@@ -29,18 +29,6 @@ public class WidgetEditor extends JFrame implements BaseEditor{
 
 
 		scrollProperty=new JScrollPane(paneProperty,ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scrollProperty.getHorizontalScrollBar().addAdjustmentListener(new AdjustmentListener() {
-			@Override
-			public void adjustmentValueChanged(AdjustmentEvent arg0) {
-				WidgetEditor.this.scrollProperty.revalidate();
-			}
-		});
-		scrollProperty.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
-			@Override
-			public void adjustmentValueChanged(AdjustmentEvent arg0) {
-				WidgetEditor.this.scrollProperty.revalidate();
-			}
-		});
 		btnOk = new JButton("ok");
 		btnCancel = new JButton("cancel");
 

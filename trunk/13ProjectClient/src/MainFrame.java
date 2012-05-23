@@ -11,19 +11,19 @@ import editor.WidgetEditor;
 import widgets.*;
 public class MainFrame extends JFrame{
 	private JPanel contentPane = new JPanel();
-	public JButton btn1;
-	public JButton btn2;
-	public JButton btn3;
-	public JButton btn4;
+	  
 	public JButton selectBtn=null;
 	public JTextField txtField;
 	public JTextArea txtArea;
 	public JScrollPane scrollPaneWhiteBorad;
 	public JPanel paneWhiteBorad ; 
 	public JPanel selectPane=null;
+	JPanel paneMenu=null;
+	JScrollPane scrollMenu=null;
 	public int sX=0;
 	public int sY=0;
-	public Map<Widget,ChatPost> postObj=new LinkedHashMap<Widget,ChatPost>(); 
+	public Map<Widget,ChatPost> postObj=new LinkedHashMap<Widget,ChatPost>();
+	public Map<String,JButton> btns=new LinkedHashMap<String,JButton>(); 
 	void InitializeComponent(){
 		setTitle("mainFrame");
 		setSize(750,600);
@@ -42,22 +42,28 @@ public class MainFrame extends JFrame{
 		
 		contentPane.add(scrollPaneWhiteBorad);
 		
-		Panel pnl = new Panel();
-		pnl.setBounds(500, 0, 180, 300);
-		contentPane.add(pnl);
-		pnl.setLayout(new GridLayout(4, 0, 0, 0));
-		btn1 = new JButton("Rectangle");
-		pnl.add(btn1);		
-		btn2 = new JButton("Circle");
-		pnl.add(btn2);
-		btn3 = new JButton("Juggler");
-		pnl.add(btn3);
-		btn4 = new JButton("???");
-		pnl.add(btn4);
-		txtArea = new JTextArea(8,50);
-		JScrollPane scrollPaneTxtArea=new JScrollPane(txtArea,ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scrollPaneTxtArea.setBounds(0, 306, 675, 175);
 		
+		
+		paneMenu=new JPanel();
+		/*
+		btn1 = new JButton("RectangleWidget");
+		paneMenu.add(btn1);		
+		btn2 = new JButton("CircleWidget");
+		paneMenu.add(btn2);
+		btn3 = new JButton("JugglerWidget");
+		paneMenu.add(btn3);
+		btn4 = new JButton("StringWidget");
+		paneMenu.add(btn4);
+		*/
+		scrollMenu = new JScrollPane(paneMenu,ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		contentPane.add(scrollMenu);
+		addBtn("RectangleWidget");
+		addBtn("CircleWidget");
+		addBtn("JugglerWidget");
+		//addBtn("StringWidget");
+		
+		txtArea = new JTextArea(8,50);
+		JScrollPane scrollPaneTxtArea=new JScrollPane(txtArea,ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);		
 		contentPane.add(scrollPaneTxtArea);
 		
 		txtField = new JTextField();
@@ -75,10 +81,10 @@ public class MainFrame extends JFrame{
 		sl_contentPane.putConstraint(SpringLayout.SOUTH, this.scrollPaneWhiteBorad, 303, SpringLayout.NORTH, contentPane);
 		
 		
-		sl_contentPane.putConstraint(SpringLayout.WEST, pnl, 3, SpringLayout.EAST, this.scrollPaneWhiteBorad);
-		sl_contentPane.putConstraint(SpringLayout.EAST, pnl, -3, SpringLayout.EAST, contentPane);
-		sl_contentPane.putConstraint(SpringLayout.NORTH, pnl, 3, SpringLayout.NORTH, contentPane);
-		sl_contentPane.putConstraint(SpringLayout.SOUTH, pnl, 0, SpringLayout.SOUTH, this.scrollPaneWhiteBorad);
+		sl_contentPane.putConstraint(SpringLayout.WEST, scrollMenu, 3, SpringLayout.EAST, this.scrollPaneWhiteBorad);
+		sl_contentPane.putConstraint(SpringLayout.EAST, scrollMenu, -3, SpringLayout.EAST, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.NORTH, scrollMenu, 3, SpringLayout.NORTH, contentPane);
+		sl_contentPane.putConstraint(SpringLayout.SOUTH, scrollMenu, 0, SpringLayout.SOUTH, this.scrollPaneWhiteBorad);
 		
 		
 		sl_contentPane.putConstraint(SpringLayout.WEST, label, 3, SpringLayout.WEST, contentPane);
@@ -106,12 +112,28 @@ public class MainFrame extends JFrame{
 		contentPane.setLayout(sl_contentPane);
 		
 	}
+	public void addBtn(String widgetName){
+		if(btns.containsKey(widgetName))
+			return;
+		JButton  btn =new JButton(widgetName);
+		btns.put(widgetName, btn);
+		btn.addActionListener(actionListener);
+		paneMenu.add(btn);
+		updateMenu();
+	}
+	void updateMenu(){
+		paneMenu.setLayout(new GridLayout(paneMenu.getComponentCount(), 0));
+		paneMenu.setPreferredSize(new Dimension(scrollMenu.getWidth()-20,paneMenu.getComponentCount()*50));
+		scrollMenu.revalidate();
+	}
 	public MainFrame(){
 		InitializeComponent();
+		/*
 		btn1.addActionListener(actionListener);
 		btn2.addActionListener(actionListener);
 		btn3.addActionListener(actionListener);
 		btn4.addActionListener(actionListener);
+		*/
 		txtField.addKeyListener(keyAdapter);
 		paneWhiteBorad.addMouseListener(mouseAdapter);
 	}
@@ -203,15 +225,7 @@ public class MainFrame extends JFrame{
 				if(selectBtn==null)
 					return;
 				String widgetType="";
-				if(selectBtn==btn1){
-					widgetType="RectangleWidget";
-				}
-				if(selectBtn==btn2){
-					widgetType="CircleWidget";
-				}
-				if(selectBtn==btn3){
-					widgetType="JugglerWidget";
-				}
+				widgetType=selectBtn.getText();
 				selectBtn=null;
 				final String type=widgetType;
 				
@@ -371,6 +385,7 @@ public class MainFrame extends JFrame{
 	}
 	public void addWidget(ChatPost post){
 		if(post.value instanceof Widget){
+			addBtn(post.value.getClass().getSimpleName());
 			Widget w=(Widget)post.value;
 			postObj.put(w,post);
 			paneWhiteBorad.add(w,0,0);
