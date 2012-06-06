@@ -7,7 +7,7 @@ import fpTree.FPTree;
 import fpTree.HeadTable;
 public class FPTreeSample {
 	public static void main(String[] args) throws IOException {
-		test(1000);
+		test(0);
 		/*
 		for(int i=1010;i>50;i-=10){
 			test(i);
@@ -16,7 +16,7 @@ public class FPTreeSample {
 	
 	public static void test(int minSuport) throws IOException{
 		long time =System.currentTimeMillis();
-		HeadTable table=new HeadTable(getFileName("ratings.dat"));
+		HeadTable table=new HeadTable(getFileName("test.dat"));
 		//table.showTable();
 		FPTree fptree=table.createFPTree(minSuport);
 		//fptree.showTable();

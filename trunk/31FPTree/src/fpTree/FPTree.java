@@ -28,7 +28,7 @@ public class FPTree {
 	
 	private void createTree() throws IOException{
 		BufferedReader reader=new BufferedReader(new InputStreamReader( new FileInputStream(fileName)));
-	
+		BufferedWriter writer=new BufferedWriter(new OutputStreamWriter( new FileOutputStream("test.dat",false)));
 		String tid_old=null;
 		List<String> items=new ArrayList<String>();
 		while(reader.ready()){
@@ -40,12 +40,22 @@ public class FPTree {
 			if(!tid.equals(tid_old)){
 				createNode(items);
 				items=new ArrayList<String>();
+				writer.append(String.format("\n%s\t", tid));
 				tid_old=tid;
 			}
-			if(table.containsKey(item))
+			if(table.containsKey(item)){
+				if(items.size()==0){
+				writer.append(String.format("%s", item));
+				}else{
+					writer.append(String.format(",%s", item));	
+				}
 				items.add(item);
+			}
 		}		
 		createNode(items);
+
+		writer.flush();
+		writer.close();
 	}
 	private void createCondtionlFPTree(){
 		for(HeadItem head:table.values()){
