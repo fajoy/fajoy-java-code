@@ -47,7 +47,6 @@ public class CanopyClustering {
 	//0~1 0=diff 1=same
 	public double T1=0.5;
 	public double T2=0.5;
-
 	public Map<String, UserModel> moveData=new LinkedHashMap<String, UserModel>();
 	public List<Canopy> canopys=new ArrayList<CanopyClustering.Canopy>();
 	public CanopyClustering(String fileName) throws IOException{
@@ -125,6 +124,7 @@ public class CanopyClustering {
 		}		
 		
 	}
+	
 	public class Canopy{
 		public UserModel center;
 		public HashMap<UserModel,UserModel> items=new HashMap<UserModel,UserModel>();
@@ -134,10 +134,10 @@ public class CanopyClustering {
 		}
 		boolean inT1(UserModel obj){
 			//System.out.format("%s %s %f %f \n",this.center.UserId,obj.UserId,CanopyClustering.this.T1,center.getJaccardDistance(obj));
-			return CanopyClustering.this.T1>center.getJaccardDistance(obj);
+			return CanopyClustering.this.T1>=center.getJaccardDistance(obj);
 		}
 		boolean inT2(UserModel obj){
-			return CanopyClustering.this.T2>center.getJaccardDistance(obj);
+			return CanopyClustering.this.T2>=center.getJaccardDistance(obj);
 		}
 	}
 }
