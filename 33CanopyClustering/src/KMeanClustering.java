@@ -43,9 +43,10 @@ public class KMeanClustering {
 			KMeanClustering means=new KMeanClustering(c);
 			means.getMeanGroups();
 			time2=System.currentTimeMillis()-time2;
-			System.out.format("T\tk\ttime\tkmeanrun\ttime\n");
-			System.out.format("%f\t%d\t%d\t%d\t%d\n",t,c.canopys.size(),time1,means.round,time2);
+			
 			means.showGroup();
+			System.out.format("T\tk\ttime\tkmeanrun\ttime\tgroup_count\n");
+			System.out.format("%f\t%d\t%d\t%d\t%d\t%d\n",t,c.canopys.size(),time1,means.round,time2,means.group_count);
 			if(c.canopys.size()==c.rows.size())
 				break;
 		}
@@ -67,6 +68,7 @@ public class KMeanClustering {
 	public Map<String, RowModel> items=null;
 	public Map<ItemModelMean,MeanGroup> groups=new LinkedHashMap<ItemModelMean, MeanGroup>();
 	public int round=0;
+	public int group_count=0;
 	public void getMeanGroups(){
 		round=0;
 		//this.showGroup();
@@ -101,6 +103,7 @@ public class KMeanClustering {
 		Iterator<RowModel> ri2=null;
 		RowModel r1=null;
 		RowModel r2=null;
+		group_count=0;
 		while(ig1.hasNext()){
 			g1=ig1.next();
 			g2=ig2.next();
@@ -113,6 +116,7 @@ public class KMeanClustering {
 				r2=ri2.next();
 				if(r1!=r2)	return true;
 			}	
+			group_count++;
 		}
 		return false;
 	}
