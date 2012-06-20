@@ -33,15 +33,21 @@ public abstract class ServerCompute implements Compute {
 			}
 			return t.execute();
 		}
-
+		
+		/*
+		if(!chatserver.ChatServer.server.users.containsKey(target)){
+			return String.format("target client %s not exist", target);
+		}
+		*/
 		// Client run
 		try {
 			System.out.format("task %s target %s\n",t.getClass().getSimpleName(), target);
 			Compute comp = RMIHelper.getSkeleton(target);
 			return comp.executeTask(t, target);
 		} catch (Exception e) {
-			System.out.format("target client %s not exist\n", target);
-			e.printStackTrace();
+			System.out.format("target client %s not exist", target);
+			//e.printStackTrace();
+			//return String.format("target client %s not exist", target);
 		}
 		return t.execute();
 

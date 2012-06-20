@@ -3,8 +3,9 @@ import java.io.*;
 import java.net.Socket;
 import java.rmi.RemoteException;
 import java.util.*;
+import java.util.Map.*;
 import java.util.regex.Pattern;
-
+import task.*;
 
 import task.*;
 import task.RMIHelper;
@@ -94,6 +95,21 @@ public class ChatRoomClient extends StreamHandler {
 				showPost();
 				return;
 			}
+			cmd="/showtask";
+			if (cmd.length() <= line.length()&&line.substring(0, cmd.length()).equals(cmd)) {
+				showTask();
+				return;
+			}
+			cmd="/task";
+			if (cmd.length() <= line.length()&&line.substring(0, cmd.length()).equals(cmd)) {
+				createTask(line);
+				return;
+			}
+			cmd="/rexe";
+			if (cmd.length() <= line.length()&&line.substring(0, cmd.length()).equals(cmd)) {
+				rexeTask(line);
+				return;
+			}
 		}
 		this.writeLine(line);
 		this.flush();
@@ -104,6 +120,68 @@ public class ChatRoomClient extends StreamHandler {
 		}
 		
 	}
+	public void showTask() {
+		for ( Entry<String, Task> taskItem : TaskStore.tasks.entrySet()) {
+			sys.writeLine(String.format("Task ID: %s,Task Type: %s",taskItem.getKey(),taskItem.getValue().getClass().getSimpleName()));
+		}
+	}
+	public void createTask(String line) {
+		String[] args = line.split("( )+",4);
+		if(args.length<3){
+			sys.writeLine("task args error.");
+			return ;
+		}
+		String id=args[1];
+		if(TaskStore.getTask(id)!=null){
+			sys.writeLine("taskid is exist.");
+			return;
+		}
+		String type=args[2];
+		String init_str=(args.length>3)?args[3]:"";
+		Task task =null;
+		try {
+			Class<?> taskClass=null;
+			taskClass = Class.forName(String.format("task.%s", type));
+			task=(Task)taskClass.newInstance();
+			task.init(init_str);
+		} catch (Exception e) {
+			sys.writeLine(String.format("no %s such type task.", type));
+			sys.flush();
+			return ;
+		}catch (NoClassDefFoundError e) {
+			sys.writeLine(String.format("no %s such type task.", type));
+			sys.flush();
+			return ;
+		}
+		if(task==null)
+			sys.writeLine("create task error.");
+		else{
+			TaskStore.saveTask(id, task);
+			sys.writeLine(String.format("Task ID: %s,Task Type: %s",id,task.getClass().getSimpleName()));
+		}
+		sys.flush();
+	}	
+	public void rexeTask(String line) {
+		String[] args = line.split("( )+",3);
+		if(args.length<2){
+			sys.writeLine("rexe args error.");
+			return ;
+		}
+		final String taskId = args[1];
+		String target = (args.length>2)?args[2]:"@SERVER";
+		final Task task=TaskStore.getTask(taskId);
+		if(task==null){
+			sys.writeLine("no such task.");
+			return ;
+		}
+		TaskCallBack.execute(task, target, new Callback() {
+			@Override
+			public void callback(TaskCallBack sender, Object returnValue) {
+				sys.writeLine(String.format("task %s(%s) execute return:%s",task.getClass().getSimpleName(),taskId,returnValue ));
+				sys.flush();
+			}
+		});
+	}	
 	public void showPost() {
 		for (Object obj2 : posts.values().toArray()) {
 			ChatPost post = (ChatPost) obj2;
@@ -111,9 +189,7 @@ public class ChatRoomClient extends StreamHandler {
 					post.userName, post.msgid, post.type, post.toString()));
 		}
 		sys.flush();
-
-	}
-	
+	}	
 
 	public void setUserPost(String userName, String msgid, String type,
 			String value) {

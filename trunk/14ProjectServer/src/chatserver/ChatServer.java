@@ -8,6 +8,7 @@ import task.ServerCompute;
 
 
 public class ChatServer {
+	public static ChatRoom server=null;
 	public static void main(String[] args) {
 		/*
 		try {
@@ -21,7 +22,7 @@ public class ChatServer {
 			port=Integer.parseInt(args[0]);
 		try {
 			
-			final ChatRoom server=new ChatRoom(port);
+			server=new ChatRoom(port);
 			ServerCompute engine=new ServerCompute() {
 				@Override
 				public String[] getClientNames() {
