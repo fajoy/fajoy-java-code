@@ -31,7 +31,6 @@ public class KMeanClustering {
 		}
 	}
 	private static  void batchTest(CanopyClustering c){
-		System.out.format("T\tk\ttime\tkmeanrun\ttime\n");
 		for(double t=0.5;t>=0;t-=0.01){
 			c.T2=t;
 			c.T1=t;
@@ -44,6 +43,7 @@ public class KMeanClustering {
 			KMeanClustering means=new KMeanClustering(c);
 			means.getMeanGroups();
 			time2=System.currentTimeMillis()-time2;
+			System.out.format("T\tk\ttime\tkmeanrun\ttime\n");
 			System.out.format("%f\t%d\t%d\t%d\t%d\n",t,c.canopys.size(),time1,means.round,time2);
 			means.showGroup();
 			if(c.canopys.size()==c.rows.size())
@@ -127,11 +127,16 @@ public class KMeanClustering {
 			Iterator<RowModel> i= g.items.iterator();
 			RowModel row=i.next();
 			//System.out.format("%s",obj.UserId);
+			
 			System.out.format("%s:%f",row.rowId,g.mean.getCosineDistance(row));
+			int show_C=0;
 			while(i.hasNext()){
 				row=i.next();
 				//System.out.format(",%s",obj.UserId);
-				System.out.format(",%s:%f",row.rowId,g.mean.getCosineDistance(row));
+				if(show_C<10){
+					show_C++;
+					System.out.format(",%s:%f",row.rowId,g.mean.getCosineDistance(row));
+				}
 			}
 			System.out.format("\n");
 			//g.mean.showData();
