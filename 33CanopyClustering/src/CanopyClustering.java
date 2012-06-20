@@ -124,10 +124,19 @@ public class CanopyClustering {
 		}		
 		
 	}
+	public List<UserModelMean> getMeans(){
+		List<UserModelMean> means=new ArrayList<UserModelMean>();
+		int i=0;
+		for(Canopy c:canopys){
+			means.add(new UserModelMean(String.valueOf(i),c.items.values()));
+			i++;
+		}
+		return means;
+	}
 	
 	public class Canopy{
 		public UserModel center;
-		public HashMap<UserModel,UserModel> items=new HashMap<UserModel,UserModel>();
+		public Map<UserModel,UserModel> items=new LinkedHashMap<UserModel,UserModel>();
 		public Canopy(UserModel obj){
 			this.center=obj;
 			items.put(obj,obj);

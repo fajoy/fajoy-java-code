@@ -1,7 +1,7 @@
 import java.util.*;
 public class UserModel {
 	String UserId="";
-	Map<String, Integer> MoveIDs= new HashMap<String, Integer>();
+	Map<String, Integer> MoveIDs= new LinkedHashMap<String, Integer>();
 	public double getJaccardDistance(UserModel obj){
 		//if(this.jaccardCache.containsKey(obj.MoveIDs))
 			//return this.jaccardCache.get(obj.MoveIDs);
