@@ -367,8 +367,7 @@ public class MainFrame extends JFrame{
 	}
 	
 	public void writeLine(String msg){
-		txtArea.append(msg);
-	   	txtArea.append("\n");
+		txtArea.append(msg+"\n");
 		txtArea.setSelectionStart(txtArea.getText().length());
 	}
 	public void write(String msg){

@@ -12,7 +12,6 @@ import task.Compute;
 import task.GetTask;
 import task.RMIHelper;
 import task.Task;
-import task.TaskStore;
 import widgets.*;
 
 public class ChatUser extends StreamHandler {
@@ -205,9 +204,9 @@ public class ChatUser extends StreamHandler {
 			cmdHandler.put("/change", entReqChange);
 			cmdHandler.put("/kick", entReqKick);
 			cmdHandler.put("/leave", entReqLeave);
-			cmdHandler.put("/showtask",entReqShowTask);
-			cmdHandler.put("/task", entReqTask);
-			cmdHandler.put("/rexe", entReqRexe);
+			//cmdHandler.put("/showtask",entReqShowTask);
+			//cmdHandler.put("/task", entReqTask);
+			//cmdHandler.put("/rexe", entReqRexe);
 		}
 
 		@Override
@@ -232,7 +231,7 @@ public class ChatUser extends StreamHandler {
 			return true;
 			
 		}
-
+/*
 		private ReadLineHandler<StreamHandler> entReqShowTask = new ReadLineHandler<StreamHandler>() {
 			@Override
 			public boolean action(StreamHandler sender, String line) {
@@ -243,6 +242,8 @@ public class ChatUser extends StreamHandler {
 				return true;
 			}
 		};
+		*/
+		/*
 		private ReadLineHandler<StreamHandler> entReqTask = new ReadLineHandler<StreamHandler>() {
 			@Override
 			public boolean action(StreamHandler sender, String line) {
@@ -269,7 +270,8 @@ public class ChatUser extends StreamHandler {
 				}
 				return true;
 			}
-		};
+		};*/
+		/*
 		private ReadLineHandler<StreamHandler> entReqRexe = new ReadLineHandler<StreamHandler>() {
 			@Override
 			public boolean action(StreamHandler sender, String line) {
@@ -297,7 +299,7 @@ public class ChatUser extends StreamHandler {
 				});
 				return true;
 			}
-		};
+		};*/
 		private ReadLineHandler<StreamHandler> entReqYell = new ReadLineHandler<StreamHandler>() {
 			@Override
 			public boolean action(StreamHandler sender, String line) {
