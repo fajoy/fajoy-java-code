@@ -32,7 +32,7 @@ public class KMeanClustering {
 	}
 	private static  void batchTest(CanopyClustering c){
 		System.out.format("T\tk\ttime\tkmeanrun\ttime\n");
-		for(double t=0.2;t>=0;t-=0.01){
+		for(double t=0.5;t>=0;t-=0.01){
 			c.T2=t;
 			c.T1=t;
 			c.canopys.clear();
@@ -95,22 +95,12 @@ public class KMeanClustering {
 	private boolean isDiff(Map<ItemModelMean,MeanGroup> gs1,Map<ItemModelMean,MeanGroup> gs2){
 		Iterator<MeanGroup> ig1=gs1.values().iterator();
 		Iterator<MeanGroup> ig2=gs2.values().iterator();
-		MeanGroup g1=ig1.next();
-		MeanGroup g2=ig2.next();
-		if(g1.items.size()!=g2.items.size())
-			return true;
-		Iterator<RowModel> ri1=g1.items.iterator();
-		Iterator<RowModel> ri2=g2.items.iterator();
-		RowModel r1=ri1.next();
-		RowModel r2=ri2.next();
-		if(r1!=r2)	return true;
-		while(ri1.hasNext()){
-			r1=ri1.next();
-			r2=ri2.next();
-			if(r1!=r2)	return true;
-		}
-		
-		
+		MeanGroup g1=null;
+		MeanGroup g2=null;
+		Iterator<RowModel> ri1=null;
+		Iterator<RowModel> ri2=null;
+		RowModel r1=null;
+		RowModel r2=null;
 		while(ig1.hasNext()){
 			g1=ig1.next();
 			g2=ig2.next();
@@ -118,9 +108,6 @@ public class KMeanClustering {
 				return true;
 			ri1=g1.items.iterator();
 			ri2=g2.items.iterator();
-			r1=ri1.next();
-			r2=ri2.next();
-			if(r1!=r2)	return true;
 			while(ri1.hasNext()){
 				r1=ri1.next();
 				r2=ri2.next();
