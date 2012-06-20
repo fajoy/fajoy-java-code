@@ -32,7 +32,7 @@ public class CanopyClustering {
 	}
 	
 	private void batchTest(){
-		for(double t=0.5;t>0;t-=0.01){
+		for(double t=0.5;t>=0;t-=0.01){
 			this.T2=t;
 			this.T1=t;
 			this.canopys.clear();
