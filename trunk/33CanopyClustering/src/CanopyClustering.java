@@ -38,6 +38,8 @@ public class CanopyClustering {
 			this.canopys.clear();
 			this.getCanopySet();
 			System.out.format("t=%f k=%d\n",t,this.canopys.size());
+			if(this.canopys.size()==moveData.size())
+				break;
 		}
 	}
 	//0~1 0=diff 1=same
