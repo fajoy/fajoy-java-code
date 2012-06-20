@@ -47,15 +47,20 @@ public class UserModelMean {
 		double abs=this.distanceCache*Math.pow(obj.MoveIDs.size(), 0.5);
 		double d=1f;
 		d=same/abs;
-		//this.cosineCache.put(obj, d);
-		//obj.cosineCache.put(this, d);
 		return d;
 	}
 	public void showData(){
 		System.out.format("meanid=%s\t",meanId);
-		for (Entry<String, Double> entry:MoveIDs.entrySet()){
+		Iterator<Entry<String, Double>> i= MoveIDs.entrySet().iterator();
+		if(i.hasNext()){
+			Entry<String, Double> entry=i.next();
+			System.out.format("%s:%f",entry.getKey(),entry.getValue());
+		}
+		while(i.hasNext()){
+			Entry<String, Double> entry=i.next();
 			System.out.format(",%s:%f",entry.getKey(),entry.getValue());
 		}
-		//System.out.format("meanid=%s moveidsize=%d \n",meanId,this.MoveIDs.size());
+		System.out.println();
+		//System.out.format("\nmeanid=%s moveidsize=%d \n",meanId,this.MoveIDs.size());
 	}
 }

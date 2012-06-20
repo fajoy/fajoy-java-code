@@ -65,7 +65,8 @@ public class CanopyClustering {
 			String[] moveids=args[1].split(",");
 			for(int i=0;i<moveids.length;i++)
 			{
-				data.MoveIDs.put(moveids[i], 1);
+				if(!moveids[i].isEmpty())
+					data.MoveIDs.put(moveids[i], 1);
 			}
 			moveData.put(data.UserId, data);
 		}	
