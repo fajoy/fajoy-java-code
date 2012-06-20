@@ -134,10 +134,10 @@ public class CanopyClustering {
 		}
 		boolean inT1(UserModel obj){
 			//System.out.format("%s %s %f %f \n",this.center.UserId,obj.UserId,CanopyClustering.this.T1,center.getJaccardDistance(obj));
-			return CanopyClustering.this.T1>=center.getJaccardDistance(obj);
+			return CanopyClustering.this.T1>center.getJaccardDistance(obj);
 		}
 		boolean inT2(UserModel obj){
-			return CanopyClustering.this.T2>=center.getJaccardDistance(obj);
+			return CanopyClustering.this.T2>center.getJaccardDistance(obj);
 		}
 	}
 }
