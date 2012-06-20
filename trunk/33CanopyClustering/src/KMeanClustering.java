@@ -116,7 +116,8 @@ public class KMeanClustering {
 				r2=ri2.next();
 				if(r1!=r2)	return true;
 			}	
-			group_count++;
+			if(g1.items.size()>0)
+				group_count++;
 		}
 		return false;
 	}
