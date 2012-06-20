@@ -119,6 +119,10 @@ public class KMeanClustering {
 	public void showGroup(){
 		for(MeanGroup g:groups.values()){
 			System.out.format("%s:%d\t",g.mean.meanId,g.items.size());
+			if(g.items.size()==0){
+				System.out.format("\n");
+				continue;
+			}
 			Iterator<RowModel> i= g.items.iterator();
 			RowModel obj=i.next();
 			//System.out.format("%s",obj.UserId);
