@@ -32,12 +32,14 @@ public class CanopyClustering {
 	}
 	
 	private void batchTest(){
-		for(double t=0.5;t>0;t-=0.02){
+		for(double t=0.5;t>0;t-=0.01){
 			this.T2=t;
 			this.T1=t;
 			this.canopys.clear();
+			long st=System.currentTimeMillis();
 			this.getCanopySet();
-			System.out.format("t=%f k=%d\n",t,this.canopys.size());
+			long et=System.currentTimeMillis();
+			System.out.format("t=%f k=%d time=%s\n",t,this.canopys.size(),et-st);
 			if(this.canopys.size()==moveData.size())
 				break;
 		}
