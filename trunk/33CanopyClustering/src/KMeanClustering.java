@@ -13,15 +13,22 @@ public class KMeanClustering {
 		URL url = CanopyClustering.class.getResource("moveid.dat");
 		System.out.format("%s", url.getFile());
 		CanopyClustering c= new CanopyClustering(url.getFile());
-		c.showData();
-		c.showDistance();
-		
+		c.T1=0.24;
+		c.T2=0.24;
+		//c.showData();
+		//c.showDistance();
+		c.getCanopySet();
+		List<UserModelMean> ms=c.getMeans();
+		for(UserModelMean m:ms){
+			m.showData();
+		}
 	}
 	public Map<String, UserModel> moveData=new LinkedHashMap<String, UserModel>();
 	public KMeanClustering(String fileName) throws IOException{
 		this.parseData(fileName);
 		
 	}
+	
 	public void parseData(String fileName) throws IOException{
 		BufferedReader reader=new BufferedReader(new InputStreamReader( new FileInputStream(fileName)));
 		while(reader.ready()){

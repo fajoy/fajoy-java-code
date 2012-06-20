@@ -52,9 +52,10 @@ public class UserModelMean {
 		return d;
 	}
 	public void showData(){
+		System.out.format("meanid=%s\t",meanId);
 		for (Entry<String, Double> entry:MoveIDs.entrySet()){
-			System.out.format("meanid=%s moveid=%s mean=%f\n",meanId,entry.getKey(),entry.getValue());
+			System.out.format(",%s:%f",entry.getKey(),entry.getValue());
 		}
-		System.out.format("meanid=%s moveidsize=%d \n",meanId,this.MoveIDs.size());
+		//System.out.format("meanid=%s moveidsize=%d \n",meanId,this.MoveIDs.size());
 	}
 }
