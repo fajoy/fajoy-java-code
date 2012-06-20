@@ -117,7 +117,7 @@ public class KMeanClustering {
 		return false;
 	}
 	public void showGroup(){
-		System.out.format("%gid:count\tid:distance\n");
+		System.out.format("gid:count\tid:distance\n");
 		for(MeanGroup g:groups.values()){
 			System.out.format("%s:%d\t",g.mean.meanId,g.items.size());
 			if(g.items.size()==0){
