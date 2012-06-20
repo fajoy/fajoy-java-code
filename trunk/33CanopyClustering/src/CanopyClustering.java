@@ -15,18 +15,34 @@ public class CanopyClustering {
 		CanopyClustering c= new CanopyClustering(url.getFile());
 		//c.showData();
 		//c.showDistance();
+		
+		/*
 		UserModelMean mean=new UserModelMean("1", c.moveData.values());
 		//mean.showData();
 		for (UserModel data1 : c.moveData.values()) {
 			double d=mean.getCosineDistance(data1);
 			//System.out.format("UserId=%s MoveIdSize=%d mean distance=%f\n",data1.UserId,data1.MoveIDs.size(),d);
 		}
-		c.getCanopySet();
-		c.showCanopy();
+		*/
+		//c.getCanopySet();
+		//c.showCanopy();
+		
+		//find t1,t2
+		c.batchTest();
+	}
+	
+	private void batchTest(){
+		for(double t=0.5;t>0;t-=0.02){
+			this.T2=t;
+			this.T1=t;
+			this.canopys.clear();
+			this.getCanopySet();
+			System.out.format("t=%f k=%d\n",t,this.canopys.size());
+		}
 	}
 	//0~1 0=diff 1=same
-	public double T1=0.025;
-	public double T2=0.05;
+	public double T1=0.5;
+	public double T2=0.5;
 
 	public Map<String, UserModel> moveData=new LinkedHashMap<String, UserModel>();
 	public List<Canopy> canopys=new ArrayList<CanopyClustering.Canopy>();
@@ -73,7 +89,6 @@ public class CanopyClustering {
 	}
 	public void getCanopySet(){
 		List<UserModel> list=new ArrayList<UserModel>(moveData.values());
-		int run=0;
 		int index=-1;
 		while (list.size()>0) {
 			index=(index+1)%list.size();
@@ -91,7 +106,7 @@ public class CanopyClustering {
 			Canopy newCanopy=new Canopy(take);
 			canopys.add(newCanopy);
 			
-			System.out.format("run %d caoy %d\n",run++,canopys.size());
+			//System.out.format("canopys size %d\n",canopys.size());
 			List<UserModel> dup=new ArrayList<UserModel>(moveData.values());
 			dup.remove(take);
 			for(UserModel p:dup){
