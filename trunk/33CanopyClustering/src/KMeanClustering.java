@@ -117,6 +117,7 @@ public class KMeanClustering {
 		return false;
 	}
 	public void showGroup(){
+		System.out.format("%gid:count\tid:distance\n");
 		for(MeanGroup g:groups.values()){
 			System.out.format("%s:%d\t",g.mean.meanId,g.items.size());
 			if(g.items.size()==0){
@@ -124,14 +125,13 @@ public class KMeanClustering {
 				continue;
 			}
 			Iterator<RowModel> i= g.items.iterator();
-			RowModel obj=i.next();
+			RowModel row=i.next();
 			//System.out.format("%s",obj.UserId);
-			System.out.format("%s:%f",obj.rowId,g.mean.getCosineDistance(obj));
+			System.out.format("%s:%f",row.rowId,g.mean.getCosineDistance(row));
 			while(i.hasNext()){
-				obj=i.next();
+				row=i.next();
 				//System.out.format(",%s",obj.UserId);
-				if(obj.rowId.length()<3)
-					System.out.format(",%s:%f",obj.rowId,g.mean.getCosineDistance(obj));
+				System.out.format(",%s:%f",row.rowId,g.mean.getCosineDistance(row));
 			}
 			System.out.format("\n");
 			//g.mean.showData();
