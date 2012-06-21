@@ -8,12 +8,18 @@ public class ItemModelMean {
 	public String meanId="";
 	Map<String, Double> itemMean= new HashMap<String, Double>();
 	private double distanceCache=0;
+	public ItemModelMean(ItemModelMean old,Collection<RowModel> items){
+		this.meanId=old.meanId;
+		this.itemMean= old.itemMean;
+		this.setMean(items);
+	}
 	public ItemModelMean(String meanId,Collection<RowModel> items){
 		this.meanId=meanId;
-		this.getMean(items);
+		this.setMean(items);
 	}
-	private void getMean(Collection<RowModel> items) {
+	private void setMean(Collection<RowModel> items) {
 		if (items.size()==0)return;
+		itemMean=new HashMap<String, Double>();
 		for (RowModel item : items) {
 			for (Entry<String, Integer> entry:item.items.entrySet()){
 				String key=entry.getKey();
@@ -35,6 +41,7 @@ public class ItemModelMean {
 		this.distanceCache=Math.pow(sum, 0.5);
 	}
 	public double getCosineDistance(RowModel row){
+		if (itemMean.size()==0)return 0d;
 		double same=0;
 		for(Entry<String, Integer> entry:row.items.entrySet()){
 			String key=entry.getKey();

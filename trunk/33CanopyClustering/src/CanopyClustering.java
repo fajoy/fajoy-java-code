@@ -128,11 +128,19 @@ public class CanopyClustering {
 		}		
 		
 	}
-	public List<ItemModelMean> getMeans(){
+	public List<ItemModelMean> getMeans(boolean isPoint){
 		List<ItemModelMean> means=new ArrayList<ItemModelMean>();
 		int i=0;
 		for(Canopy c:canopys){
-			ItemModelMean mean=new ItemModelMean(String.valueOf(i),c.items.values());
+			ItemModelMean mean=null;
+			if(isPoint){
+				List<RowModel> centerP=new ArrayList<RowModel>();
+				centerP.add(c.center);
+				mean=new ItemModelMean(String.valueOf(i),centerP);
+			}
+			else{
+				mean=new ItemModelMean(String.valueOf(i),c.items.values());
+			}
 			i++;
 			means.add(mean);			
 		}

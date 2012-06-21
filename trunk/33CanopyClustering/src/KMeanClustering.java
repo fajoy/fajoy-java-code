@@ -20,7 +20,7 @@ public class KMeanClustering {
 
 	public KMeanClustering(CanopyClustering c){
 		c.getCanopySet();
-		List<ItemModelMean> ms=c.getMeans();
+		List<ItemModelMean> ms=c.getMeans(true);
 		for(ItemModelMean m:ms){
 			groups.put(m, new MeanGroup(m));
 		}
@@ -85,7 +85,7 @@ public class KMeanClustering {
 	private Map<ItemModelMean,MeanGroup> getNewGroup(Map<ItemModelMean,MeanGroup> old){
 		Map<ItemModelMean,MeanGroup> groups=new LinkedHashMap<ItemModelMean, MeanGroup>();
 		for(MeanGroup g:old.values()){
-			ItemModelMean m=new ItemModelMean(g.mean.meanId,g.items);
+			ItemModelMean m=new ItemModelMean(g.mean,g.items);
 			groups.put(m, new MeanGroup(m));
 		}
 		for(RowModel item:items.values()){
