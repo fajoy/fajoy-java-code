@@ -30,7 +30,7 @@ public class KMeanClustering {
 		items=new HashMap<String, RowModel>(c.rows);
 		for(RowModel item:items.values()){
 			ItemModelMean mean=getMean(groups.keySet(), item);
-			groups.get(mean).items.put(item.rowId, item);
+			groups.get(mean.meanId).items.put(item.rowId, item);
 		}
 	}
 	
@@ -101,7 +101,7 @@ public class KMeanClustering {
 		}
 		for(RowModel item:items.values()){
 			ItemModelMean mean=getMean(groups.keySet(), item);
-			groups.get(mean).items.put(item.rowId,item);
+			groups.get(mean.meanId).items.put(item.rowId,item);
 		}
 		return groups;
 	}
