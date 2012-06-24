@@ -25,7 +25,7 @@ public class KMeanClustering {
 	public KMeanClustering(CanopyClustering c){
 		List<ItemModelMean> ms=c.getMeans(true);
 		for(ItemModelMean m:ms){
-			groups.put(m, new MeanGroup(m));
+			groups.put(m.meanId, new MeanGroup(m));
 		}
 		items=new HashMap<String, RowModel>(c.rows);
 		for(RowModel item:items.values()){
@@ -39,7 +39,7 @@ public class KMeanClustering {
 	}
 	public void addMean(String line){
 		ItemModelMean m=ItemModelMean.parse(line);
-		groups.put(m, new MeanGroup(m));
+		groups.put(m.meanId, new MeanGroup(m));
 	}
 	private static  void batchTest(CanopyClustering c){
 		for(double t=0.5;t>=0;t-=0.01){
@@ -62,12 +62,12 @@ public class KMeanClustering {
 				break;
 		}
 	}	
-	public ItemModelMean getMean(Collection<ItemModelMean> means,RowModel item){
-		Iterator<ItemModelMean> i=means.iterator();
-		ItemModelMean mean=i.next();
+	public ItemModelMean getMean(Collection<String> means,RowModel item){
+		Iterator<String> i=means.iterator();
+		ItemModelMean mean=groups.get(i.next()).mean;
 		double max=mean.getCosineDistance(item);
 		while(i.hasNext()){
-			ItemModelMean comp=i.next();
+			ItemModelMean comp=groups.get(i.next()).mean;
 			double  d=comp.getCosineDistance(item);
 			if(d>max){
 				mean=comp;
@@ -77,14 +77,14 @@ public class KMeanClustering {
 		return mean;
 	}
 	public Map<String, RowModel> items=null;
-	public Map<ItemModelMean,MeanGroup> groups=new HashMap<ItemModelMean, MeanGroup>();
+	public TreeMap<String,MeanGroup> groups=new TreeMap<String, MeanGroup>();
 	public int round=0;
 	public int group_count=0;
 	public void getMeanGroups(){
 		round=0;
 		//this.showGroup();
 		//System.out.format("run %d\n",run++);
-		Map<ItemModelMean,MeanGroup> g=this.getNewGroup(this.groups);
+		TreeMap<String,MeanGroup> g=this.getNewGroup(this.groups);
 		while(isDiff(groups, g)){
 			groups=g;	
 			g=this.getNewGroup(this.groups);
@@ -93,11 +93,11 @@ public class KMeanClustering {
 		}
 		
 	}
-	private Map<ItemModelMean,MeanGroup> getNewGroup(Map<ItemModelMean,MeanGroup> old){
-		Map<ItemModelMean,MeanGroup> groups=new HashMap<ItemModelMean, MeanGroup>();
+	private TreeMap<String,MeanGroup> getNewGroup(TreeMap<String,MeanGroup>  old){
+		TreeMap<String,MeanGroup> groups=new TreeMap<String,MeanGroup>();
 		for(MeanGroup g:old.values()){
 			ItemModelMean m=new ItemModelMean(g.mean,g.items.values());
-			groups.put(m, new MeanGroup(m));
+			groups.put(m.meanId, new MeanGroup(m));
 		}
 		for(RowModel item:items.values()){
 			ItemModelMean mean=getMean(groups.keySet(), item);
@@ -105,7 +105,7 @@ public class KMeanClustering {
 		}
 		return groups;
 	}
-	private boolean isDiff(Map<ItemModelMean,MeanGroup> gs1,Map<ItemModelMean,MeanGroup> gs2){
+	private boolean isDiff(TreeMap<String,MeanGroup>  gs1,TreeMap<String,MeanGroup>  gs2){
 		Iterator<MeanGroup> ig1=gs1.values().iterator();
 		Iterator<MeanGroup> ig2=gs2.values().iterator();
 		MeanGroup g1=null;
@@ -160,9 +160,11 @@ public class KMeanClustering {
 	}
 	public class MeanGroup{
 		ItemModelMean mean;
-		public Map<String,RowModel> items=new HashMap<String,RowModel>();
+		String meanId;
+		public TreeMap<String,RowModel> items=new TreeMap<String,RowModel>();
 		public MeanGroup(ItemModelMean obj){
 			this.mean=obj;
+			this.meanId=obj.meanId;
 		}
 	}
 }
