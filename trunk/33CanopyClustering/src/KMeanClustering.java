@@ -27,7 +27,7 @@ public class KMeanClustering {
 		for(ItemModelMean m:ms){
 			groups.put(m, new MeanGroup(m));
 		}
-		items=new LinkedHashMap<String, RowModel>(c.rows);
+		items=new HashMap<String, RowModel>(c.rows);
 		for(RowModel item:items.values()){
 			ItemModelMean mean=getMean(groups.keySet(), item);
 			groups.get(mean).items.put(item.rowId, item);
@@ -77,7 +77,7 @@ public class KMeanClustering {
 		return mean;
 	}
 	public Map<String, RowModel> items=null;
-	public Map<ItemModelMean,MeanGroup> groups=new LinkedHashMap<ItemModelMean, MeanGroup>();
+	public Map<ItemModelMean,MeanGroup> groups=new HashMap<ItemModelMean, MeanGroup>();
 	public int round=0;
 	public int group_count=0;
 	public void getMeanGroups(){
