@@ -3,7 +3,7 @@ import java.util.*;
 import java.util.Map.Entry;
 public class RowModel {
 	public String rowId="";
-	Map<String, Integer> items= new LinkedHashMap<String, Integer>();
+	LinkedHashMap<String, Integer> items= new LinkedHashMap<String, Integer>();
 	public static void main(String args[]){	
 		RowModel row=RowModel.parse("0\t1:0,2,3");
 		System.out.format("%s\n", row.toRowString());
