@@ -30,7 +30,7 @@ public class ItemModelMean {
 	}
 	
 	public String meanId="";
-	Map<String, Double> itemMean= new HashMap<String, Double>();
+	TreeMap<String, Double> itemMean= new TreeMap<String, Double>();
 	private double distanceCache=0;
 	private ItemModelMean () {
 		
@@ -46,7 +46,7 @@ public class ItemModelMean {
 	}
 	private void setMean(Collection<RowModel> items) {
 		if (items.size()==0)return;
-		itemMean=new HashMap<String, Double>();
+		itemMean=new TreeMap<String, Double>();
 		for (RowModel item : items) {
 			for (Entry<String, Integer> entry:item.items.entrySet()){
 				String key=entry.getKey();
