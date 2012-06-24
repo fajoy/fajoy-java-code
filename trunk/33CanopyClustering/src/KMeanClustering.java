@@ -30,7 +30,7 @@ public class KMeanClustering {
 		items=new LinkedHashMap<String, RowModel>(c.rows);
 		for(RowModel item:items.values()){
 			ItemModelMean mean=getMean(groups.keySet(), item);
-			groups.get(mean).items.add(item);
+			groups.get(mean).items.put(item.rowId, item);
 		}
 	}
 	
@@ -96,12 +96,12 @@ public class KMeanClustering {
 	private Map<ItemModelMean,MeanGroup> getNewGroup(Map<ItemModelMean,MeanGroup> old){
 		Map<ItemModelMean,MeanGroup> groups=new HashMap<ItemModelMean, MeanGroup>();
 		for(MeanGroup g:old.values()){
-			ItemModelMean m=new ItemModelMean(g.mean,g.items);
+			ItemModelMean m=new ItemModelMean(g.mean,g.items.values());
 			groups.put(m, new MeanGroup(m));
 		}
 		for(RowModel item:items.values()){
 			ItemModelMean mean=getMean(groups.keySet(), item);
-			groups.get(mean).items.add(item);
+			groups.get(mean).items.put(item.rowId,item);
 		}
 		return groups;
 	}
@@ -120,8 +120,8 @@ public class KMeanClustering {
 			g2=ig2.next();
 			if(g1.items.size()!=g2.items.size())
 				return true;
-			ri1=g1.items.iterator();
-			ri2=g2.items.iterator();
+			ri1=g1.items.values().iterator();
+			ri2=g2.items.values().iterator();
 			while(ri1.hasNext()){
 				r1=ri1.next();
 				r2=ri2.next();
@@ -140,7 +140,7 @@ public class KMeanClustering {
 				System.out.format("\n");
 				continue;
 			}
-			Iterator<RowModel> i= g.items.iterator();
+			Iterator<RowModel> i= g.items.values().iterator();
 			RowModel row=i.next();
 			//System.out.format("%s",obj.UserId);
 			
@@ -160,7 +160,7 @@ public class KMeanClustering {
 	}
 	public class MeanGroup{
 		ItemModelMean mean;
-		public List<RowModel> items=new ArrayList<RowModel>();
+		public Map<String,RowModel> items=new HashMap<String,RowModel>();
 		public MeanGroup(ItemModelMean obj){
 			this.mean=obj;
 		}
