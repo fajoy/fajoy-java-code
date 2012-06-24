@@ -1,4 +1,3 @@
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -107,17 +106,28 @@ public class KMeanClustering {
 		return groups;
 	}
 	private boolean isDiff(Map<ItemModelMean,MeanGroup> gs1,Map<ItemModelMean,MeanGroup> gs2){
-		Iterator<ItemModelMean> ig1=gs1.keySet().iterator();
-		Iterator<ItemModelMean> ig2=gs2.keySet().iterator();
-		
+		Iterator<MeanGroup> ig1=gs1.values().iterator();
+		Iterator<MeanGroup> ig2=gs2.values().iterator();
+		MeanGroup g1=null;
+		MeanGroup g2=null;
+		Iterator<RowModel> ri1=null;
+		Iterator<RowModel> ri2=null;
+		RowModel r1=null;
+		RowModel r2=null;
 		group_count=0;
 		while(ig1.hasNext()){
-			ItemModelMean m1=ig1.next();
-			ItemModelMean m2=ig2.next();
-			if(!m1.toMeanString(true).equals(m2.toMeanString(true))){
+			g1=ig1.next();
+			g2=ig2.next();
+			if(g1.items.size()!=g2.items.size())
 				return true;
-			}
-			if(m1.itemMean.size()>0)
+			ri1=g1.items.iterator();
+			ri2=g2.items.iterator();
+			while(ri1.hasNext()){
+				r1=ri1.next();
+				r2=ri2.next();
+				if(r1!=r2)	return true;
+			}	
+			if(g1.items.size()>0)
 				group_count++;
 		}
 		return false;
