@@ -110,18 +110,18 @@ public class KMeanClustering {
 		Iterator<MeanGroup> ig2=gs2.values().iterator();
 		MeanGroup g1=null;
 		MeanGroup g2=null;
-		Iterator<RowModel> ri1=null;
-		Iterator<RowModel> ri2=null;
-		RowModel r1=null;
-		RowModel r2=null;
+		Iterator<String> ri1=null;
+		Iterator<String> ri2=null;
+		String r1=null;
+		String r2=null;
 		group_count=0;
 		while(ig1.hasNext()){
 			g1=ig1.next();
 			g2=ig2.next();
 			if(g1.items.size()!=g2.items.size())
 				return true;
-			ri1=g1.items.values().iterator();
-			ri2=g2.items.values().iterator();
+			ri1=g1.items.keySet().iterator();
+			ri2=g2.items.keySet().iterator();
 			while(ri1.hasNext()){
 				r1=ri1.next();
 				r2=ri2.next();
