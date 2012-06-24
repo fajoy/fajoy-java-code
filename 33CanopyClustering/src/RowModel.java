@@ -1,7 +1,41 @@
+
 import java.util.*;
+import java.util.Map.Entry;
 public class RowModel {
-	String rowId="";
+	public String rowId="";
 	Map<String, Integer> items= new LinkedHashMap<String, Integer>();
+	public static void main(String args[]){	
+		RowModel row=RowModel.parse("0\t1:0,2,3");
+		System.out.format("%s\n", row.toRowString());
+		RowModel row2=RowModel.parse(row.toRowString());
+
+	}
+	public static RowModel parse(String line){
+		String[] args=line.split("\t", 2);
+		RowModel data=new RowModel();
+		data.rowId=args[0];
+		String[] moveids=args[1].split(",");
+		for(int i=0;i<moveids.length;i++)
+		{
+			if(!moveids[i].isEmpty())
+				data.items.put(moveids[i], 1);
+		}
+		return data;
+	}
+	public String toRowString() {
+		StringBuffer sb=new StringBuffer();
+		sb.append(String.format("%s\t",rowId));
+		Iterator<String> i= items.keySet().iterator();
+		if(i.hasNext()){
+			String entry=i.next();
+			sb.append(String.format("%s",entry));
+		}
+		while(i.hasNext()){
+			String entry=i.next();
+			sb.append(String.format(",%s",entry));
+		}
+		return sb.toString();
+	};
 	public double getJaccardDistance(RowModel obj){
 		int same=0;
 		for(String moveid:obj.items.keySet()){

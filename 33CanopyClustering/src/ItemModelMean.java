@@ -1,13 +1,40 @@
 
+
 import java.util.*;
 import java.util.Map.Entry;
 
 
 
 public class ItemModelMean {
+	public static void main(String args[]){
+		
+		ItemModelMean mean=ItemModelMean.parse("0\t1:0.1,2:1,3:0.5");
+		System.out.format("%s\n", mean.toMeanString(false));
+		ItemModelMean mean2=ItemModelMean.parse(mean.toMeanString(true));
+		mean2.showData();
+	}
+	public static ItemModelMean parse(String line){
+		ItemModelMean mean=new ItemModelMean();
+		String[] args=line.split("\t",2);
+		mean.meanId=args[0];
+		String[] value=args[1].split(",");
+		Double sum=0d;
+		for (String string : value) {
+			String[] v=string.split(":");
+			double m= Double.parseDouble(v[1]);
+			sum+=m*m;
+			mean.itemMean.put(v[0], m);
+		}
+		mean.distanceCache=Math.pow(sum, 0.5);
+		return mean;
+	}
+	
 	public String meanId="";
 	Map<String, Double> itemMean= new HashMap<String, Double>();
 	private double distanceCache=0;
+	private ItemModelMean () {
+		
+	}
 	public ItemModelMean(ItemModelMean old,Collection<RowModel> items){
 		this.meanId=old.meanId;
 		this.itemMean= old.itemMean;
@@ -40,6 +67,7 @@ public class ItemModelMean {
 		}
 		this.distanceCache=Math.pow(sum, 0.5);
 	}
+	
 	public double getCosineDistance(RowModel row){
 		if (itemMean.size()==0)return 0d;
 		double same=0;
@@ -55,6 +83,22 @@ public class ItemModelMean {
 		d=same/abs;
 		return d;
 	}
+	public String toMeanString(boolean hasId) {
+		StringBuffer sb=new StringBuffer();
+		if(hasId)
+			sb.append(String.format("%s\t",meanId));
+		Iterator<Entry<String, Double>> i= itemMean.entrySet().iterator();
+		if(i.hasNext()){
+			Entry<String, Double> entry=i.next();
+			sb.append(String.format("%s:%f",entry.getKey(),entry.getValue()));
+		}
+		while(i.hasNext()){
+			Entry<String, Double> entry=i.next();
+			sb.append(String.format(",%s:%f",entry.getKey(),entry.getValue()));
+		}
+		return sb.toString();
+	};
+	
 	public void showData(){
 		System.out.format("meanid=%s\t",meanId);
 		Iterator<Entry<String, Double>> i= itemMean.entrySet().iterator();

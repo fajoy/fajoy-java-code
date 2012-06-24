@@ -1,3 +1,4 @@
+
 import java.awt.ItemSelectable;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -7,12 +8,17 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.*;
 
+
+
 public class CanopyClustering {
 
 	public static void main(String[] args) throws IOException {
 		URL url = CanopyClustering.class.getResource("moveid.dat");
 		//System.out.format("%s", url.getFile());
-		CanopyClustering c= new CanopyClustering(url.getFile());
+		CanopyClustering c= new CanopyClustering();
+		c.T1=0.2;
+		c.T2=0.2;
+		c.parseData(url.getFile());
 		//c.showData();
 		//c.showDistance();
 		
@@ -24,7 +30,7 @@ public class CanopyClustering {
 			System.out.format("UserId=%s MoveIdSize=%d mean distance=%f\n",data1.rowId,data1.items.size(),d);
 		}
 		*/
-		//c.getCanopySet();
+
 		//c.showCanopy();
 		
 		//find t1,t2
@@ -37,7 +43,7 @@ public class CanopyClustering {
 			this.T1=t;
 			this.canopys.clear();
 			long st=System.currentTimeMillis();
-			this.getCanopySet();
+			this.setCanopySet();
 			long et=System.currentTimeMillis();
 			System.out.format("t=%f k=%d time=%s\n",t,this.canopys.size(),et-st);
 			if(this.canopys.size()==rows.size())
@@ -48,28 +54,43 @@ public class CanopyClustering {
 	public double T1=0.5;
 	public double T2=0.5;
 	public Map<String, RowModel> rows=new LinkedHashMap<String, RowModel>();
-	public List<Canopy> canopys=new ArrayList<CanopyClustering.Canopy>();
-	public CanopyClustering(String fileName) throws IOException{
-		this.parseData(fileName);
-		
+	public List<CanopyModel> canopys=new ArrayList<CanopyModel>();
+	private JaccardDistanceCache cache=new JaccardDistanceCache();
+	
+	public CanopyClustering(){
 	}
 	public void parseData(String fileName) throws IOException{
 		BufferedReader reader=new BufferedReader(new InputStreamReader( new FileInputStream(fileName)));
 		while(reader.ready()){
 			String line=reader.readLine();
-			String[] args=line.split("\t", 2);
-			if(args==null||args.length<2)
-				continue;
-			RowModel data=new RowModel();
-			data.rowId=args[0];
-			String[] moveids=args[1].split(",");
-			for(int i=0;i<moveids.length;i++)
-			{
-				if(!moveids[i].isEmpty())
-					data.items.put(moveids[i], 1);
-			}
-			rows.put(data.rowId, data);
+			addData(line);
 		}	
+	}
+	public void addData(String row){
+		String[] args=row.split("\t", 2);
+		if(args==null||args.length<2)
+			return ;
+		RowModel data=new RowModel();
+		data.rowId=args[0];
+		String[] moveids=args[1].split(",");
+		for(int i=0;i<moveids.length;i++)
+		{
+			if(!moveids[i].isEmpty())
+				data.items.put(moveids[i], 1);
+		}
+		rows.put(data.rowId, data);
+		
+		RowModel take=data;
+		for (CanopyModel canopy:canopys) {
+			if(inT2(canopy,take,cache)){
+				canopy.items.put(take, take);
+				return;
+			}
+		}
+		
+		CanopyModel newCanopy=new CanopyModel(take);
+		canopys.add(newCanopy);
+		
 	}
 	public void showData(){
 		for (RowModel data : rows.values()) {
@@ -78,7 +99,7 @@ public class CanopyClustering {
 	}
 	public void showCanopy(){
 		int i=1;
-		for (Canopy canopy : canopys) {
+		for (CanopyModel canopy : canopys) {
 			System.out.format("index=%d moveid:%s items=%d\n",i++,canopy.center.rowId,canopy.items.size());
 		}
 	}
@@ -91,16 +112,16 @@ public class CanopyClustering {
 			}
 		}
 	}
-	public void getCanopySet(){
+	public void setCanopySet(){
 		if(canopys.size()>0) return;
 		List<RowModel> list=new ArrayList<RowModel>(rows.values());
 		int index=-1;
-		JaccardDistanceCache cache=new JaccardDistanceCache();
+		
 		while (list.size()>0) {
 			index=(index+1)%list.size();
 			RowModel take=list.get(index);
 			boolean inT2=false;
-			for (Canopy canopy:canopys) {
+			for (CanopyModel canopy:canopys) {
 				if(inT2(canopy,take,cache)){
 					canopy.items.put(take, take);
 					inT2=true;
@@ -109,7 +130,7 @@ public class CanopyClustering {
 			list.remove(take);
 			if(inT2)
 				continue;
-			Canopy newCanopy=new Canopy(take);
+			CanopyModel newCanopy=new CanopyModel(take);
 			canopys.add(newCanopy);
 			
 			//System.out.format("canopys size %d\n",canopys.size());
@@ -131,15 +152,13 @@ public class CanopyClustering {
 	public List<ItemModelMean> getMeans(boolean isPoint){
 		List<ItemModelMean> means=new ArrayList<ItemModelMean>();
 		int i=0;
-		for(Canopy c:canopys){
+		for(CanopyModel c:canopys){
 			ItemModelMean mean=null;
 			if(isPoint){
-				List<RowModel> centerP=new ArrayList<RowModel>();
-				centerP.add(c.center);
-				mean=new ItemModelMean(String.valueOf(i),centerP);
+				mean=c.getMean(String.valueOf(i), true);
 			}
 			else{
-				mean=new ItemModelMean(String.valueOf(i),c.items.values());
+				mean=c.getMean(String.valueOf(i), false);
 			}
 			i++;
 			means.add(mean);			
@@ -172,20 +191,13 @@ public class CanopyClustering {
 			}
 		}
 	}
-	public boolean inT1(Canopy canopy,RowModel row,JaccardDistanceCache cache){
+	public boolean inT1(CanopyModel canopy,RowModel row,JaccardDistanceCache cache){
 		JaccardDistanceCache.Cache c= cache.get(canopy.center, row);
 		return CanopyClustering.this.T1>c.d;
 	}
-	public boolean inT2(Canopy canopy,RowModel row,JaccardDistanceCache cache){
+	public boolean inT2(CanopyModel canopy,RowModel row,JaccardDistanceCache cache){
 		JaccardDistanceCache.Cache c= cache.get(canopy.center, row);
 		return CanopyClustering.this.T2>c.d;
 	}
-	public class Canopy{
-		public RowModel center;
-		public Map<RowModel,RowModel> items=new LinkedHashMap<RowModel,RowModel>();
-		public Canopy(RowModel center){
-			this.center=center;
-			items.put(center,center);
-		}
-	}
+
 }

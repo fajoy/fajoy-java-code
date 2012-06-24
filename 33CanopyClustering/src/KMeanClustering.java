@@ -1,6 +1,10 @@
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
+
+
 
 
 
@@ -8,9 +12,10 @@ import java.util.*;
 public class KMeanClustering {
 	public static void main(String[] args) throws IOException  {
 		URL url = CanopyClustering.class.getResource("moveid.dat");
-		CanopyClustering c= new CanopyClustering(url.getFile());
+		CanopyClustering c= new CanopyClustering();
 		//c.T1=0.24;
 		//c.T2=0.24;
+		c.parseData(url.getFile());
 		//KMeanClustering means=new KMeanClustering(c);
 		//c.showData();
 		//c.showDistance();		
@@ -19,7 +24,6 @@ public class KMeanClustering {
 	}
 
 	public KMeanClustering(CanopyClustering c){
-		c.getCanopySet();
 		List<ItemModelMean> ms=c.getMeans(true);
 		for(ItemModelMean m:ms){
 			groups.put(m, new MeanGroup(m));
@@ -30,13 +34,21 @@ public class KMeanClustering {
 			groups.get(mean).items.add(item);
 		}
 	}
+	
+	public KMeanClustering(){
+		
+	}
+	public void addMean(String line){
+		ItemModelMean m=ItemModelMean.parse(line);
+		groups.put(m, new MeanGroup(m));
+	}
 	private static  void batchTest(CanopyClustering c){
 		for(double t=0.5;t>=0;t-=0.01){
 			c.T2=t;
 			c.T1=t;
 			c.canopys.clear();
 			long time1=System.currentTimeMillis();
-			c.getCanopySet();
+			c.setCanopySet();
 			//c.showCanopy();
 			time1=System.currentTimeMillis()-time1;
 			long time2=System.currentTimeMillis();
@@ -51,7 +63,7 @@ public class KMeanClustering {
 				break;
 		}
 	}	
-	private ItemModelMean getMean(Collection<ItemModelMean> means,RowModel item){
+	public ItemModelMean getMean(Collection<ItemModelMean> means,RowModel item){
 		Iterator<ItemModelMean> i=means.iterator();
 		ItemModelMean mean=i.next();
 		double max=mean.getCosineDistance(item);
@@ -83,7 +95,7 @@ public class KMeanClustering {
 		
 	}
 	private Map<ItemModelMean,MeanGroup> getNewGroup(Map<ItemModelMean,MeanGroup> old){
-		Map<ItemModelMean,MeanGroup> groups=new LinkedHashMap<ItemModelMean, MeanGroup>();
+		Map<ItemModelMean,MeanGroup> groups=new HashMap<ItemModelMean, MeanGroup>();
 		for(MeanGroup g:old.values()){
 			ItemModelMean m=new ItemModelMean(g.mean,g.items);
 			groups.put(m, new MeanGroup(m));
