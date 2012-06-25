@@ -136,15 +136,15 @@ public class CanopyClustering {
 		canopys.clear();
 		List<RowModel> list=new ArrayList<RowModel>(rows.values());
 		int index=0;
-		//Random r=new Random(System.currentTimeMillis());
-		//index=r.nextInt(list.size());
+		Random r=new Random(System.currentTimeMillis());
+		index=r.nextInt(list.size());
 		RowModel take=list.get(index);
 		list.remove(take);
 		CanopyModel newCanopy=new CanopyModel(take);
 		canopys.add(newCanopy);
 		while (list.size()>0) {
-			index=(index+1)%list.size();
-			//index=r.nextInt(list.size());
+			//index=(index+1)%list.size();
+			index=r.nextInt(list.size());
 			
 			take=list.get(index);
 			boolean inT2=false;
