@@ -46,6 +46,7 @@ public class ItemModelMean {
 	}
 	private void setMean(Collection<RowModel> items) {
 		if (items.size()==0)return;
+			
 		itemMean=new HashMap<String, Double>();
 		for (RowModel item : items) {
 			for (Entry<String, Integer> entry:item.items.entrySet()){
@@ -68,8 +69,13 @@ public class ItemModelMean {
 		this.distanceCache=Math.pow(sum, 0.5);
 	}
 	
-	public double getCosineDistance(RowModel row){
-		if (itemMean.size()==0)return 0d;
+	public double getCosineSimilarity(RowModel row){
+		if(row.items.size()==0||this.itemMean.size()==0){
+			if(row.items.size()==0&&this.itemMean.size()==0)
+				return 1.0d;
+			else
+				return 0.0d;
+		}
 		double same=0;
 		for(Entry<String, Integer> entry:row.items.entrySet()){
 			String key=entry.getKey();

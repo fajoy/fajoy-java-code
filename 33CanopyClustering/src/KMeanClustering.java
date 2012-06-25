@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
+import java.util.Map.Entry;
 
 
 
@@ -12,20 +13,26 @@ public class KMeanClustering {
 	public static void main(String[] args) throws IOException  {
 		URL url = CanopyClustering.class.getResource("moveid.dat");
 		CanopyClustering c= new CanopyClustering();
-		//c.T1=0.24;
-		//c.T2=0.24;
+		c.T1=0.0;
+		c.T2=0.0;
 		c.parseData(url.getFile());
-		//KMeanClustering means=new KMeanClustering(c);
+		//c.setFastCanopySet();
+		//c.showCanopy();
+		KMeanClustering means=new KMeanClustering(c);
 		//c.showData();
-		//c.showDistance();		
+		//c.showDistance();
+		//means.showMean();
+		//means.showGroup();
 		//means.getMeanGroups();
+		
 		batchTest(c);
 	}
 
 	public KMeanClustering(CanopyClustering c){
-		List<ItemModelMean> ms=c.getMeans(true);
+		List<ItemModelMean> ms=c.toMeans(true);
 		for(ItemModelMean m:ms){
-			groups.put(m.meanId, new MeanGroup(m));
+			MeanGroup mg=new MeanGroup(m);
+			groups.put(m.meanId, mg);
 		}
 		items=new HashMap<String, RowModel>(c.rows);
 	}
@@ -59,13 +66,13 @@ public class KMeanClustering {
 				break;
 		}
 	}	
-	public ItemModelMean getCloseMean(Collection<String> means,RowModel item){
-		Iterator<String> i=means.iterator();
-		ItemModelMean mean=groups.get(i.next()).mean;
-		double max=mean.getCosineDistance(item);
+	public ItemModelMean getCloseMean(Collection<MeanGroup> collection,RowModel row){
+		Iterator<MeanGroup> i=collection.iterator();
+		ItemModelMean mean=i.next().mean;
+		double max=mean.getCosineSimilarity(row);
 		while(i.hasNext()){
-			ItemModelMean comp=groups.get(i.next()).mean;
-			double  d=comp.getCosineDistance(item);
+			ItemModelMean comp=i.next().mean;
+			double  d=comp.getCosineSimilarity(row);
 			if(d>max){
 				mean=comp;
 				max=d;
@@ -78,39 +85,54 @@ public class KMeanClustering {
 	public int round=0;
 	public int group_count=0;
 	public void getMeanGroups(){
-		round=0;
-		//this.showGroup();
+		round=1;
+		
 		//System.out.format("run %d\n",run++);
 		HashMap<String,MeanGroup> g=this.getNewGroup(this.groups);
 		while(isDiff(groups, g)){
 			groups=g;	
 			g=this.getNewGroup(this.groups);
 			//this.showGroup();
+			//this.showMean();
 			round++;
-			//showGroup();
+
 		}
 		
 	}
 	private HashMap<String,MeanGroup> getNewGroup(HashMap<String,MeanGroup>  old){
 		HashMap<String,MeanGroup> groups=new HashMap<String,MeanGroup>();
+		//dup mean
 		for(MeanGroup g:old.values()){
 			ItemModelMean m=new ItemModelMean(g.mean,g.items.values());
 			groups.put(m.meanId, new MeanGroup(m));
 		}
+		//group item
 		for(RowModel item:items.values()){
-			ItemModelMean mean=getCloseMean(old.keySet(), item);
+			ItemModelMean mean=getCloseMean(old.values(), item);
 			groups.get(mean.meanId).items.put(item.rowId,item);
 		}
+		//create mean vector
 		for(MeanGroup mg:groups.values()){
 			mg.mean=new ItemModelMean(mg.meanId, mg.items.values());
+			//???
+			//mean group is null~ 
+			/*
+			if(mg.mean.itemMean.size()==0){
+				HashMap<String, Double> oldmeanItem=old.get(mg.meanId).mean.itemMean;
+				mg.mean.itemMean=new HashMap<String, Double>(oldmeanItem);
+			}*/
 		}
 		return groups;
 	}
-	private boolean isDiff(HashMap<String,MeanGroup>  gs1,HashMap<String,MeanGroup>  gs2){
-		
+	public boolean isDiff(HashMap<String,MeanGroup>  gs1,HashMap<String,MeanGroup>  gs2){
+		group_count=0;
 		for(String id :gs1.keySet()){
-			ItemModelMean m1=gs1.get(id).mean;
-			ItemModelMean m2=gs2.get(id).mean;
+			MeanGroup mg1=gs1.get(id);
+			MeanGroup mg2=gs2.get(id);
+			ItemModelMean m1=mg1.mean;
+			ItemModelMean m2=mg2.mean;
+			if(mg2.items.size()>0)
+				group_count++;
 			if(m1.itemMean.size()!=m2.itemMean.size())
 				return true;
 			for(String mi: m1.itemMean.keySet()){
@@ -120,7 +142,9 @@ public class KMeanClustering {
 				double d2=m2.itemMean.get(mi);
 				if(m1.itemMean.size()!=m2.itemMean.size())
 					return true;	
+				
 			}
+			
 			
 			/*
 			String ms1=m1.toMeanString(false);
@@ -169,15 +193,34 @@ public class KMeanClustering {
 			RowModel row=i.next();
 			//System.out.format("%s",obj.UserId);
 			
-			System.out.format("%s:%f",row.rowId,g.mean.getCosineDistance(row));
+			System.out.format("%s:%f",row.rowId,g.mean.getCosineSimilarity(row));
 			int show_C=0;
 			while(i.hasNext()){
 				row=i.next();
 				//System.out.format(",%s",obj.UserId);
 				if(show_C<10){
 					show_C++;
-					System.out.format(",%s:%f",row.rowId,g.mean.getCosineDistance(row));
+					System.out.format(",%s:%f",row.rowId,g.mean.getCosineSimilarity(row));
 				}
+			}
+			System.out.format("\n");
+			//g.mean.showData();
+		}
+	}
+	public void showMean(){
+		System.out.format("mid\titemid:vector\n");
+		for(MeanGroup g:groups.values()){
+			System.out.format("%s:%d\t",g.mean.meanId,g.items.size());
+			ItemModelMean m=g.mean;
+			
+			//System.out.format("%s",obj.UserId);
+			if(m.itemMean.size()>0){
+			Iterator<Entry<String, Double>> ei=m.itemMean.entrySet().iterator();
+			Entry<String, Double> en=ei.next();
+			System.out.format("%s:%f",en.getKey(),en.getValue());
+			while(ei.hasNext())
+				en=ei.next();
+				System.out.format(",%s:%f",en.getKey(),en.getValue());
 			}
 			System.out.format("\n");
 			//g.mean.showData();

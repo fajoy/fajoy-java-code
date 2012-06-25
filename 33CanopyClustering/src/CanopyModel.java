@@ -7,12 +7,12 @@ import java.util.Map;
 
 public class CanopyModel{
 	public RowModel center;
-	public Map<RowModel,RowModel> items=new LinkedHashMap<RowModel,RowModel>();
+	public Map<String,RowModel> items=new LinkedHashMap<String,RowModel>();
 	public CanopyModel(RowModel center){
 		this.center=center;
-		items.put(center,center);
+		items.put(center.rowId,center);
 	}
-	public ItemModelMean getMean(String meanId,boolean isPoint){
+	public ItemModelMean toMean(String meanId,boolean isPoint){
 		if(isPoint){
 			List<RowModel> centerP=new ArrayList<RowModel>();
 			centerP.add(center);
