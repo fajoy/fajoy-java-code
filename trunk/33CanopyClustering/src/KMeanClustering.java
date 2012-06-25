@@ -27,11 +27,7 @@ public class KMeanClustering {
 		for(ItemModelMean m:ms){
 			groups.put(m.meanId, new MeanGroup(m));
 		}
-		items=new HashMap<String, RowModel>(c.rows);
-		for(RowModel item:items.values()){
-			ItemModelMean mean=getMean(groups.keySet(), item);
-			groups.get(mean.meanId).items.put(item.rowId, item);
-		}
+		items=new TreeMap<String, RowModel>(c.rows);
 	}
 	
 	public KMeanClustering(){
@@ -42,7 +38,7 @@ public class KMeanClustering {
 		groups.put(m.meanId, new MeanGroup(m));
 	}
 	private static  void batchTest(CanopyClustering c){
-		for(double t=0.5;t>=0;t-=0.01){
+		for(double t=0.4;t>=0.0;t-=0.01){
 			c.T2=t;
 			c.T1=t;
 			c.canopys.clear();
@@ -62,7 +58,7 @@ public class KMeanClustering {
 				break;
 		}
 	}	
-	public ItemModelMean getMean(Collection<String> means,RowModel item){
+	public ItemModelMean getCloseMean(Collection<String> means,RowModel item){
 		Iterator<String> i=means.iterator();
 		ItemModelMean mean=groups.get(i.next()).mean;
 		double max=mean.getCosineDistance(item);
@@ -76,7 +72,7 @@ public class KMeanClustering {
 		}
 		return mean;
 	}
-	public Map<String, RowModel> items=null;
+	public TreeMap<String, RowModel> items=null;
 	public TreeMap<String,MeanGroup> groups=new TreeMap<String, MeanGroup>();
 	public int round=0;
 	public int group_count=0;
@@ -90,6 +86,7 @@ public class KMeanClustering {
 			g=this.getNewGroup(this.groups);
 			//this.showGroup();
 			round++;
+			//showGroup();
 		}
 		
 	}
@@ -100,12 +97,26 @@ public class KMeanClustering {
 			groups.put(m.meanId, new MeanGroup(m));
 		}
 		for(RowModel item:items.values()){
-			ItemModelMean mean=getMean(groups.keySet(), item);
+			ItemModelMean mean=getCloseMean(old.keySet(), item);
 			groups.get(mean.meanId).items.put(item.rowId,item);
+		}
+		for(MeanGroup mg:groups.values()){
+			mg.mean=new ItemModelMean(mg.meanId, mg.items.values());
 		}
 		return groups;
 	}
 	private boolean isDiff(TreeMap<String,MeanGroup>  gs1,TreeMap<String,MeanGroup>  gs2){
+		
+		for(String id :gs1.keySet()){
+			ItemModelMean m1=gs1.get(id).mean;
+			ItemModelMean m2=gs2.get(id).mean;
+			String ms1=m1.toMeanString(false);
+			String ms2=m2.toMeanString(false);
+			if(!ms1.equals(ms2))
+				return true;
+		}
+		
+		/*
 		Iterator<MeanGroup> ig1=gs1.values().iterator();
 		Iterator<MeanGroup> ig2=gs2.values().iterator();
 		MeanGroup g1=null;
@@ -129,7 +140,7 @@ public class KMeanClustering {
 			}	
 			if(g1.items.size()>0)
 				group_count++;
-		}
+		}*/
 		return false;
 	}
 	public void showGroup(){

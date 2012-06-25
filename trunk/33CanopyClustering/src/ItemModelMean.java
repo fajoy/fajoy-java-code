@@ -37,7 +37,7 @@ public class ItemModelMean {
 	}
 	public ItemModelMean(ItemModelMean old,Collection<RowModel> items){
 		this.meanId=old.meanId;
-		this.itemMean= old.itemMean;
+		this.itemMean= new TreeMap<String, Double>(old.itemMean);
 		this.setMean(items);
 	}
 	public ItemModelMean(String meanId,Collection<RowModel> items){
