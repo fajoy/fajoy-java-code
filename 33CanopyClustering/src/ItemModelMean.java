@@ -30,14 +30,14 @@ public class ItemModelMean {
 	}
 	
 	public String meanId="";
-	TreeMap<String, Double> itemMean= new TreeMap<String, Double>();
+	HashMap<String, Double> itemMean= new HashMap<String, Double>();
 	private double distanceCache=0;
 	private ItemModelMean () {
 		
 	}
 	public ItemModelMean(ItemModelMean old,Collection<RowModel> items){
 		this.meanId=old.meanId;
-		this.itemMean= new TreeMap<String, Double>(old.itemMean);
+		this.itemMean= new HashMap<String, Double>(old.itemMean);
 		this.setMean(items);
 	}
 	public ItemModelMean(String meanId,Collection<RowModel> items){
@@ -46,7 +46,7 @@ public class ItemModelMean {
 	}
 	private void setMean(Collection<RowModel> items) {
 		if (items.size()==0)return;
-		itemMean=new TreeMap<String, Double>();
+		itemMean=new HashMap<String, Double>();
 		for (RowModel item : items) {
 			for (Entry<String, Integer> entry:item.items.entrySet()){
 				String key=entry.getKey();

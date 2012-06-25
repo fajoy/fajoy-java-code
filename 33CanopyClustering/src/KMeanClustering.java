@@ -27,7 +27,7 @@ public class KMeanClustering {
 		for(ItemModelMean m:ms){
 			groups.put(m.meanId, new MeanGroup(m));
 		}
-		items=new TreeMap<String, RowModel>(c.rows);
+		items=new HashMap<String, RowModel>(c.rows);
 	}
 	
 	public KMeanClustering(){
@@ -38,7 +38,7 @@ public class KMeanClustering {
 		groups.put(m.meanId, new MeanGroup(m));
 	}
 	private static  void batchTest(CanopyClustering c){
-		for(double t=0.0;t<0.5;t+=0.01){
+		for(double t=0.0;t<=1.0;t+=0.01){
 			c.T2=t;
 			c.T1=t;
 			c.canopys.clear();
@@ -47,16 +47,16 @@ public class KMeanClustering {
 			time1=System.currentTimeMillis()-time1;
 			//c.showCanopy();
 			//System.out.flush();
-			long time2=System.currentTimeMillis();
 			KMeanClustering means=new KMeanClustering(c);
+			long time2=System.currentTimeMillis();
 			means.getMeanGroups();
 			time2=System.currentTimeMillis()-time2;
 			
 			means.showGroup();
-			System.out.format("T\tk\ttime\tkmeanrun\ttime\tgroup_count\n");
-			System.out.format("%f\t%d\t%d\t%d\t%d\t%d\n",t,c.canopys.size(),time1,means.round,time2,means.group_count);
-			//if(c.canopys.size()==c.rows.size())
-				//break;
+			//System.out.format("T\tk\ttime\tkmeanrun\ttime\tgroup_count\n");
+			System.out.format("@%f\t%d\t%d\t%d\t%d\t%d\n",t,c.canopys.size(),time1,means.round,time2,means.group_count);
+			if(c.canopys.size()==c.rows.size())
+				break;
 		}
 	}	
 	public ItemModelMean getCloseMean(Collection<String> means,RowModel item){
@@ -73,15 +73,15 @@ public class KMeanClustering {
 		}
 		return mean;
 	}
-	public TreeMap<String, RowModel> items=null;
-	public TreeMap<String,MeanGroup> groups=new TreeMap<String, MeanGroup>();
+	public HashMap<String, RowModel> items=null;
+	public HashMap<String,MeanGroup> groups=new HashMap<String, MeanGroup>();
 	public int round=0;
 	public int group_count=0;
 	public void getMeanGroups(){
 		round=0;
 		//this.showGroup();
 		//System.out.format("run %d\n",run++);
-		TreeMap<String,MeanGroup> g=this.getNewGroup(this.groups);
+		HashMap<String,MeanGroup> g=this.getNewGroup(this.groups);
 		while(isDiff(groups, g)){
 			groups=g;	
 			g=this.getNewGroup(this.groups);
@@ -91,8 +91,8 @@ public class KMeanClustering {
 		}
 		
 	}
-	private TreeMap<String,MeanGroup> getNewGroup(TreeMap<String,MeanGroup>  old){
-		TreeMap<String,MeanGroup> groups=new TreeMap<String,MeanGroup>();
+	private HashMap<String,MeanGroup> getNewGroup(HashMap<String,MeanGroup>  old){
+		HashMap<String,MeanGroup> groups=new HashMap<String,MeanGroup>();
 		for(MeanGroup g:old.values()){
 			ItemModelMean m=new ItemModelMean(g.mean,g.items.values());
 			groups.put(m.meanId, new MeanGroup(m));
@@ -106,15 +106,28 @@ public class KMeanClustering {
 		}
 		return groups;
 	}
-	private boolean isDiff(TreeMap<String,MeanGroup>  gs1,TreeMap<String,MeanGroup>  gs2){
+	private boolean isDiff(HashMap<String,MeanGroup>  gs1,HashMap<String,MeanGroup>  gs2){
 		
 		for(String id :gs1.keySet()){
 			ItemModelMean m1=gs1.get(id).mean;
 			ItemModelMean m2=gs2.get(id).mean;
+			if(m1.itemMean.size()!=m2.itemMean.size())
+				return true;
+			for(String mi: m1.itemMean.keySet()){
+				if(!m2.itemMean.containsKey(mi))
+					return true;
+				double d1=m1.itemMean.get(mi);
+				double d2=m2.itemMean.get(mi);
+				if(m1.itemMean.size()!=m2.itemMean.size())
+					return true;	
+			}
+			
+			/*
 			String ms1=m1.toMeanString(false);
 			String ms2=m2.toMeanString(false);
 			if(!ms1.equals(ms2))
 				return true;
+				*/
 		}
 		
 		/*
@@ -173,7 +186,7 @@ public class KMeanClustering {
 	public class MeanGroup{
 		ItemModelMean mean;
 		String meanId;
-		public TreeMap<String,RowModel> items=new TreeMap<String,RowModel>();
+		public HashMap<String,RowModel> items=new HashMap<String,RowModel>();
 		public MeanGroup(ItemModelMean obj){
 			this.mean=obj;
 			this.meanId=obj.meanId;
