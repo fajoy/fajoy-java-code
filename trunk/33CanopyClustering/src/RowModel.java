@@ -36,7 +36,13 @@ public class RowModel {
 		}
 		return sb.toString();
 	};
-	public double getJaccardDistance(RowModel obj){
+	public double getJaccardSimilarity(RowModel obj){
+		if(this.items.size()==0||obj.items.size()==0){
+			if(this.items.size()==0&&obj.items.size()==0)
+				return 1.0d;
+			else
+				return 0.0d;
+		}
 		int same=0;
 		for(String moveid:obj.items.keySet()){
 			if(this.items.containsKey(moveid))
@@ -47,7 +53,14 @@ public class RowModel {
 		d=(same+0d)/total;
 		return d;
 	}
-	public double getCosineDistance(RowModel obj){
+	/*
+	public double getCosineSimilarity(RowModel obj){
+		if(this.items.size()==0){
+			if(obj.items.size()>0)
+				return 0.0d;
+			else
+				return 1.0d;
+		}
 		int same=0;
 		for(String moveid:obj.items.keySet()){
 			if(this.items.containsKey(moveid))
@@ -58,5 +71,5 @@ public class RowModel {
 		double d=1f;
 		d=same/abs;
 		return d;
-	}
+	}*/
 }

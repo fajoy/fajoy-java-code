@@ -25,7 +25,7 @@ public class CanopyClustering {
 		//5949
 		
 		//do{
-		c.setFastCanopySet();
+		//c.setFastCanopySet();
 		
 		//}while(c.canopys.size()!=1);
 		
@@ -102,7 +102,7 @@ public class CanopyClustering {
 		RowModel take=data;
 		for (CanopyModel canopy:canopys) {
 			if(inT2(canopy,take,cache)){
-				canopy.items.put(take, take);
+				canopy.items.put(take.rowId, take);
 				return;
 			}
 		}
@@ -117,7 +117,7 @@ public class CanopyClustering {
 		}
 	}
 	public void showCanopy(){
-		int i=1;
+		int i=0;
 		for (CanopyModel canopy : canopys) {
 			System.out.format("index=%d userid:%s items=%d\n",i++,canopy.center.rowId,canopy.items.size());
 		}
@@ -125,9 +125,9 @@ public class CanopyClustering {
 	public void showDistance(){
 		for (RowModel data1 : rows.values()) {
 			for (RowModel data2 : rows.values()) {
-				double jd= data1.getJaccardDistance(data2);
-				double cd=data1.getCosineDistance(data2);
-				System.out.format("uid1=%s uid2=%s jd=%f cd=%f\n",data1.rowId,data2.rowId,jd,cd);
+				double jd= data1.getJaccardSimilarity(data2);
+				//double cd=data1.getCosineDistance(data2);
+				System.out.format("uid1=%s uid2=%s jd=%f \n",data1.rowId,data2.rowId,jd);
 			}
 		}
 	}
@@ -137,6 +137,7 @@ public class CanopyClustering {
 		List<RowModel> list=new ArrayList<RowModel>(rows.values());
 		int index=0;
 		//Random r=new Random(System.currentTimeMillis());
+		//index=r.nextInt(list.size());
 		RowModel take=list.get(index);
 		list.remove(take);
 		CanopyModel newCanopy=new CanopyModel(take);
@@ -149,7 +150,7 @@ public class CanopyClustering {
 			boolean inT2=false;
 			for (CanopyModel canopy:canopys) {
 				if(inT2(canopy,take,cache)){
-					canopy.items.put(take, take);
+					canopy.items.put(take.rowId, take);
 					inT2=true;
 				}
 			}
@@ -178,7 +179,7 @@ public class CanopyClustering {
 			boolean inT2=false;
 			for (CanopyModel canopy:canopys) {
 				if(inT2(canopy,take,cache)){
-					canopy.items.put(take, take);
+					canopy.items.put(take.rowId, take);
 					inT2=true;
 				}
 			}
@@ -193,27 +194,27 @@ public class CanopyClustering {
 			dup.remove(take);
 			for(RowModel p:dup){
 				if(inT2(newCanopy,p,cache)){
-					newCanopy.items.put(p, p);
+					newCanopy.items.put(p.rowId, p);
 					list.remove(p);
 					continue;
 				}
 				if(inT1(newCanopy,p,cache)){
-					newCanopy.items.put(p, p);
+					newCanopy.items.put(p.rowId, p);
 				}
 			}
 		}		
 		
 	}
-	public List<ItemModelMean> getMeans(boolean isPoint){
+	public List<ItemModelMean> toMeans(boolean isPoint){
 		List<ItemModelMean> means=new ArrayList<ItemModelMean>();
 		int i=0;
 		for(CanopyModel c:canopys){
 			ItemModelMean mean=null;
 			if(isPoint){
-				mean=c.getMean(String.valueOf(i), true);
+				mean=c.toMean(String.valueOf(i), true);
 			}
 			else{
-				mean=c.getMean(String.valueOf(i), false);
+				mean=c.toMean(String.valueOf(i), false);
 			}
 			i++;
 			means.add(mean);			
@@ -242,7 +243,7 @@ public class CanopyClustering {
 				this.k1=k1;
 				this.k2=k2;
 				key=k1.rowId+","+k2.rowId;
-				this.d=k1.getJaccardDistance(k2);
+				this.d=k1.getJaccardSimilarity(k2);
 			}
 		}
 	}
