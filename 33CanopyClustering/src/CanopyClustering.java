@@ -16,12 +16,28 @@ public class CanopyClustering {
 		URL url = CanopyClustering.class.getResource("moveid.dat");
 		//System.out.format("%s", url.getFile());
 		CanopyClustering c= new CanopyClustering();
-		c.T1=0.2;
-		c.T2=0.2;
+		c.T1=0.0;
+		c.T2=0.0;
 		c.parseData(url.getFile());
+		
 		//c.showData();
 		//c.showDistance();
+		//5949
 		
+		//do{
+		c.setFastCanopySet();
+		
+		//}while(c.canopys.size()!=1);
+		
+		
+		/*
+		RowModel r= c.canopys.get(0).center;
+		for(RowModel r1:c.rows.values()){
+			System.out.format("%s d= %f inT2= %s\n", r1.rowId, r.getJaccardDistance(r1),c.inT1(c.canopys.get(0), r1, c.cache));
+			System.out.flush();
+		}
+		*/
+		c.showCanopy();
 		/*
 		ItemModelMean mean=new ItemModelMean("1", c.rows.values());
 		mean.showData();
@@ -34,25 +50,28 @@ public class CanopyClustering {
 		//c.showCanopy();
 		
 		//find t1,t2
-		c.batchTest();
+		//c.batchTest();
 	}
 	
 	private void batchTest(){
-		for(double t=0.5;t>=0;t-=0.01){
+		for(double t=1.0;t>=0.0;t-=0.01){
 			this.T2=t;
 			this.T1=t;
 			this.canopys.clear();
 			long st=System.currentTimeMillis();
-			this.setCanopySet();
+			this.setFastCanopySet();
 			long et=System.currentTimeMillis();
 			System.out.format("t=%f k=%d time=%s\n",t,this.canopys.size(),et-st);
+			/*
 			if(this.canopys.size()==rows.size())
 				break;
+				*/
+			this.showCanopy();
 		}
 	}
 	//0~1 0=diff 1=same
-	public double T1=0.5;
-	public double T2=0.5;
+	public double T1=0.0;
+	public double T2=0.0;
 	public Map<String, RowModel> rows=new LinkedHashMap<String, RowModel>();
 	public List<CanopyModel> canopys=new ArrayList<CanopyModel>();
 	private JaccardDistanceCache cache=new JaccardDistanceCache();
@@ -100,7 +119,7 @@ public class CanopyClustering {
 	public void showCanopy(){
 		int i=1;
 		for (CanopyModel canopy : canopys) {
-			System.out.format("index=%d moveid:%s items=%d\n",i++,canopy.center.rowId,canopy.items.size());
+			System.out.format("index=%d userid:%s items=%d\n",i++,canopy.center.rowId,canopy.items.size());
 		}
 	}
 	public void showDistance(){
@@ -112,14 +131,21 @@ public class CanopyClustering {
 			}
 		}
 	}
-	public void setCanopySet(){
-		if(canopys.size()>0) return;
+	
+	public void setFastCanopySet(){
+		canopys.clear();
 		List<RowModel> list=new ArrayList<RowModel>(rows.values());
-		int index=-1;
-		
+		int index=0;
+		//Random r=new Random(System.currentTimeMillis());
+		RowModel take=list.get(index);
+		list.remove(take);
+		CanopyModel newCanopy=new CanopyModel(take);
+		canopys.add(newCanopy);
 		while (list.size()>0) {
 			index=(index+1)%list.size();
-			RowModel take=list.get(index);
+			//index=r.nextInt(list.size());
+			
+			take=list.get(index);
 			boolean inT2=false;
 			for (CanopyModel canopy:canopys) {
 				if(inT2(canopy,take,cache)){
@@ -130,7 +156,36 @@ public class CanopyClustering {
 			list.remove(take);
 			if(inT2)
 				continue;
-			CanopyModel newCanopy=new CanopyModel(take);
+			newCanopy=new CanopyModel(take);
+			canopys.add(newCanopy);
+		}
+
+		}	
+	public void setCanopySet(){
+		canopys.clear();
+		List<RowModel> list=new ArrayList<RowModel>(rows.values());
+		int index=0;
+		Random r=new Random(System.currentTimeMillis());
+		RowModel take=list.get(index);
+		list.remove(take);
+		CanopyModel newCanopy=new CanopyModel(take);
+		canopys.add(newCanopy);
+		while (list.size()>0) {
+			//index=(index+1)%list.size();
+			index=r.nextInt(list.size());
+			
+			take=list.get(index);
+			boolean inT2=false;
+			for (CanopyModel canopy:canopys) {
+				if(inT2(canopy,take,cache)){
+					canopy.items.put(take, take);
+					inT2=true;
+				}
+			}
+			list.remove(take);
+			if(inT2)
+				continue;
+			newCanopy=new CanopyModel(take);
 			canopys.add(newCanopy);
 			
 			//System.out.format("canopys size %d\n",canopys.size());
@@ -193,11 +248,15 @@ public class CanopyClustering {
 	}
 	public boolean inT1(CanopyModel canopy,RowModel row,JaccardDistanceCache cache){
 		JaccardDistanceCache.Cache c= cache.get(canopy.center, row);
-		return CanopyClustering.this.T1>c.d;
+		return CanopyClustering.this.T1<c.d;
+		//double d=canopy.center.getJaccardDistance(row);
+		//return CanopyClustering.this.T1<d;
 	}
 	public boolean inT2(CanopyModel canopy,RowModel row,JaccardDistanceCache cache){
 		JaccardDistanceCache.Cache c= cache.get(canopy.center, row);
-		return CanopyClustering.this.T2>c.d;
+		return CanopyClustering.this.T2<c.d;
+		//double d=canopy.center.getJaccardDistance(row);
+		//return CanopyClustering.this.T2<d;
 	}
 
 }
