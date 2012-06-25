@@ -44,7 +44,7 @@ public class RowModel {
 		}
 		int total=this.items.size()+obj.items.size()-same;
 		double d=1f;
-		d=(same+0.d)/total;
+		d=(same+0d)/total;
 		return d;
 	}
 	public double getCosineDistance(RowModel obj){

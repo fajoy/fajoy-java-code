@@ -38,14 +38,15 @@ public class KMeanClustering {
 		groups.put(m.meanId, new MeanGroup(m));
 	}
 	private static  void batchTest(CanopyClustering c){
-		for(double t=0.4;t>=0.0;t-=0.01){
+		for(double t=0.0;t<0.5;t+=0.01){
 			c.T2=t;
 			c.T1=t;
 			c.canopys.clear();
 			long time1=System.currentTimeMillis();
-			c.setCanopySet();
-			//c.showCanopy();
+			c.setFastCanopySet();
 			time1=System.currentTimeMillis()-time1;
+			//c.showCanopy();
+			//System.out.flush();
 			long time2=System.currentTimeMillis();
 			KMeanClustering means=new KMeanClustering(c);
 			means.getMeanGroups();
@@ -54,8 +55,8 @@ public class KMeanClustering {
 			means.showGroup();
 			System.out.format("T\tk\ttime\tkmeanrun\ttime\tgroup_count\n");
 			System.out.format("%f\t%d\t%d\t%d\t%d\t%d\n",t,c.canopys.size(),time1,means.round,time2,means.group_count);
-			if(c.canopys.size()==c.rows.size())
-				break;
+			//if(c.canopys.size()==c.rows.size())
+				//break;
 		}
 	}	
 	public ItemModelMean getCloseMean(Collection<String> means,RowModel item){
