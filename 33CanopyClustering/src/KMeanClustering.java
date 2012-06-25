@@ -60,8 +60,8 @@ public class KMeanClustering {
 			time2=System.currentTimeMillis()-time2;
 			
 			means.showGroup();
-			//System.out.format("T\tk\ttime\tkmeanrun\ttime\tgroup_count\n");
-			System.out.format("@%f\t%d\t%d\t%d\t%d\t%d\n",t,c.canopys.size(),time1,means.round,time2,means.group_count);
+			//System.out.format("T\tk\ttime\tkmeanrun\ttime\n");
+			System.out.format("@%f\t%d\t%d\t%d\t%d\n",t,c.canopys.size(),time1,means.round,time2);
 			if(c.canopys.size()==c.rows.size())
 				break;
 		}
@@ -83,7 +83,6 @@ public class KMeanClustering {
 	public HashMap<String, RowModel> items=null;
 	public HashMap<String,MeanGroup> groups=new HashMap<String, MeanGroup>();
 	public int round=0;
-	public int group_count=0;
 	public void getMeanGroups(){
 		round=1;
 		
@@ -124,15 +123,12 @@ public class KMeanClustering {
 		}
 		return groups;
 	}
-	public boolean isDiff(HashMap<String,MeanGroup>  gs1,HashMap<String,MeanGroup>  gs2){
-		group_count=0;
+	public static boolean isDiff(HashMap<String,MeanGroup>  gs1,HashMap<String,MeanGroup>  gs2){
 		for(String id :gs1.keySet()){
 			MeanGroup mg1=gs1.get(id);
 			MeanGroup mg2=gs2.get(id);
 			ItemModelMean m1=mg1.mean;
 			ItemModelMean m2=mg2.mean;
-			if(mg2.items.size()>0)
-				group_count++;
 			if(m1.itemMean.size()!=m2.itemMean.size())
 				return true;
 			for(String mi: m1.itemMean.keySet()){
@@ -142,45 +138,12 @@ public class KMeanClustering {
 				double d2=m2.itemMean.get(mi);
 				if(m1.itemMean.size()!=m2.itemMean.size())
 					return true;	
-				
 			}
-			
-			
-			/*
-			String ms1=m1.toMeanString(false);
-			String ms2=m2.toMeanString(false);
-			if(!ms1.equals(ms2))
-				return true;
-				*/
 		}
 		
-		/*
-		Iterator<MeanGroup> ig1=gs1.values().iterator();
-		Iterator<MeanGroup> ig2=gs2.values().iterator();
-		MeanGroup g1=null;
-		MeanGroup g2=null;
-		Iterator<String> ri1=null;
-		Iterator<String> ri2=null;
-		String r1=null;
-		String r2=null;
-		group_count=0;
-		while(ig1.hasNext()){
-			g1=ig1.next();
-			g2=ig2.next();
-			if(g1.items.size()!=g2.items.size())
-				return true;
-			ri1=g1.items.keySet().iterator();
-			ri2=g2.items.keySet().iterator();
-			while(ri1.hasNext()){
-				r1=ri1.next();
-				r2=ri2.next();
-				if(r1!=r2)	return true;
-			}	
-			if(g1.items.size()>0)
-				group_count++;
-		}*/
 		return false;
 	}
+	
 	public void showGroup(){
 		System.out.format("gid:count\tid:distance\n");
 		for(MeanGroup g:groups.values()){

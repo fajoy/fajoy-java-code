@@ -30,7 +30,7 @@ public class ItemModelMean {
 	}
 	
 	public String meanId="";
-	HashMap<String, Double> itemMean= new HashMap<String, Double>();
+	public HashMap<String, Double> itemMean= new HashMap<String, Double>();
 	private double distanceCache=0;
 	private ItemModelMean () {
 		
