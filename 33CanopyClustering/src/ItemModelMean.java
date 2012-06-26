@@ -8,7 +8,8 @@ import java.util.Map.Entry;
 public class ItemModelMean {
 	public static void main(String args[]){
 		
-		ItemModelMean mean=ItemModelMean.parse("0\t1:0.1,2:1,3:0.5");
+		//ItemModelMean mean=ItemModelMean.parse("0\t1:0.1,2:1,3:0.5");
+		ItemModelMean mean=ItemModelMean.parse("0\t");
 		System.out.format("%s\n", mean.toMeanString(false));
 		ItemModelMean mean2=ItemModelMean.parse(mean.toMeanString(true));
 		mean2.showData();
@@ -21,6 +22,8 @@ public class ItemModelMean {
 		Double sum=0d;
 		for (String string : value) {
 			String[] v=string.split(":");
+			if(v.length==1)
+				continue;
 			double m= Double.parseDouble(v[1]);
 			sum+=m*m;
 			mean.itemMean.put(v[0], m);

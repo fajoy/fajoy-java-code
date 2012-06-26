@@ -13,8 +13,8 @@ public class KMeanClustering {
 	public static void main(String[] args) throws IOException  {
 		URL url = CanopyClustering.class.getResource("moveid.dat");
 		CanopyClustering c= new CanopyClustering();
-		c.T1=0.0;
-		c.T2=0.0;
+		//c.T1=0.32;
+		//c.T2=0.32;
 		c.parseData(url.getFile());
 		//c.setFastCanopySet();
 		//c.showCanopy();
