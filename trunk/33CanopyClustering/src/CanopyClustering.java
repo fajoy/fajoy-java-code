@@ -16,8 +16,8 @@ public class CanopyClustering {
 		URL url = CanopyClustering.class.getResource("moveid.dat");
 		//System.out.format("%s", url.getFile());
 		CanopyClustering c= new CanopyClustering();
-		c.T1=0.0;
-		c.T2=0.0;
+		c.T1=0.32;
+		c.T2=0.32;
 		c.parseData(url.getFile());
 		
 		//c.showData();
@@ -82,6 +82,8 @@ public class CanopyClustering {
 		BufferedReader reader=new BufferedReader(new InputStreamReader( new FileInputStream(fileName)));
 		while(reader.ready()){
 			String line=reader.readLine();
+			//System.out.format("%s\n", line);
+			//System.out.flush();
 			addData(line);
 		}	
 	}
@@ -248,16 +250,16 @@ public class CanopyClustering {
 		}
 	}
 	public boolean inT1(CanopyModel canopy,RowModel row,JaccardDistanceCache cache){
-		JaccardDistanceCache.Cache c= cache.get(canopy.center, row);
-		return CanopyClustering.this.T1<c.d;
-		//double d=canopy.center.getJaccardDistance(row);
-		//return CanopyClustering.this.T1<d;
+		//JaccardDistanceCache.Cache c= cache.get(canopy.center, row);
+		//return CanopyClustering.this.T1<c.d;
+		double d=canopy.center.getJaccardSimilarity(row);
+		return CanopyClustering.this.T1<d;
 	}
 	public boolean inT2(CanopyModel canopy,RowModel row,JaccardDistanceCache cache){
-		JaccardDistanceCache.Cache c= cache.get(canopy.center, row);
-		return CanopyClustering.this.T2<c.d;
-		//double d=canopy.center.getJaccardDistance(row);
-		//return CanopyClustering.this.T2<d;
+		//JaccardDistanceCache.Cache c= cache.get(canopy.center, row);
+		//return CanopyClustering.this.T2<c.d;
+		double d=canopy.center.getJaccardSimilarity(row);
+		return CanopyClustering.this.T2<d;
 	}
 
 }
